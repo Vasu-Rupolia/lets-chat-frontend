@@ -744,16 +744,16 @@ export default function Header({ onMenuClick }: HeaderProps) {
 
         {open && (
           <div className="absolute right-0 top-12 bg-white border shadow rounded-xl w-48 py-2 z-50">
-            <button onClick={() => router.push(`/profile/${user?._id}`)} className="px-4 py-2 w-full text-left hover:cursor-pointer">
+            <button onClick={() => {setOpen(false); router.push(`/profile/${user?._id}`)}} className="px-4 py-2 w-full text-left hover:cursor-pointer">
               Profile
             </button>
-            <button onClick={() => router.push("/settings")} className="px-4 py-2 w-full text-left hover:cursor-pointer">
+            <button onClick={() => {setOpen(false); router.push("/settings")}} className="px-4 py-2 w-full text-left hover:cursor-pointer">
               Settings
             </button>
-            <button onClick={() => router.push("/friends")} className="px-4 py-2 w-full text-left hover:cursor-pointer">
+            <button onClick={() => {setOpen(false); router.push("/friends")}} className="px-4 py-2 w-full text-left hover:cursor-pointer">
               Friends
             </button>
-            <button onClick={() => router.push("/chatnew")} className="px-4 py-2 w-full text-left hover:cursor-pointer">
+            <button onClick={() => {setOpen(false); router.push("/chatnew")}} className="px-4 py-2 w-full text-left hover:cursor-pointer">
               Chat
             </button>
             <button onClick={logout} className="px-4 py-2 w-full text-left hover:cursor-pointer">

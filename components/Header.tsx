@@ -465,9 +465,19 @@ export default function Header({ onMenuClick }: HeaderProps) {
 
     const socket = socketRef.current;
 
+    // socket.on("connect", () => {
+    //   const userId = localStorage.getItem("userId");
+    //   if (userId) socket.emit("join", userId);
+    // });
+
     socket.on("connect", () => {
       const userId = localStorage.getItem("userId");
-      if (userId) socket.emit("join", userId);
+      console.log("Socket connected:", socket.id);
+
+      if (userId) {
+        socket.emit("join", userId);
+        console.log("Joined room:", userId);
+      }
     });
 
     return () => {

@@ -466,7 +466,15 @@ export default function Header({ onMenuClick }: HeaderProps) {
     socketRef.current = socket;
 
     socket.on("connect", () => {
-      const userId = localStorage.getItem("userId");
+      // const userId = localStorage.getItem("userId");
+
+      const userData = localStorage.getItem("user");
+
+      let userId = null;
+
+      if (userData) {
+        userId = JSON.parse(userData)._id;
+      }
       console.log("Socket connected:", socket.id);
 
       if (userId) {

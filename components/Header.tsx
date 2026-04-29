@@ -457,18 +457,13 @@ export default function Header({ onMenuClick }: HeaderProps) {
   const [friendRequests, setFriendRequests] = useState<any[]>([]);
   const [requestCount, setRequestCount] = useState(0);
 
-  // ✅ SOCKET INIT (FIXED)
+  // SOCKET INIT + LISTENER
   useEffect(() => {
-    socketRef.current = io(
+    const socket = io(
       process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"
     );
 
-    const socket = socketRef.current;
-
-    // socket.on("connect", () => {
-    //   const userId = localStorage.getItem("userId");
-    //   if (userId) socket.emit("join", userId);
-    // });
+    socketRef.current = socket;
 
     socket.on("connect", () => {
       const userId = localStorage.getItem("userId");
@@ -480,24 +475,15 @@ export default function Header({ onMenuClick }: HeaderProps) {
       }
     });
 
+    socket.on("friend_request_received", (data: any) => {
+      console.log("🔥 New request received:", data);
+
+      setRequestCount((prev) => prev + 1);
+      setFriendRequests((prev) => [data, ...prev]);
+    });
+
     return () => {
       socket.disconnect();
-    };
-  }, []);
-
-  // ✅ SOCKET LISTENER (FIXED)
-  useEffect(() => {
-    const socket = socketRef.current;
-    if (!socket) return;
-
-    const handleRequest = () => {
-      setRequestCount((prev) => prev + 1);
-    };
-
-    socket.on("friend_request_received", handleRequest);
-
-    return () => {
-      socket.off("friend_request_received", handleRequest);
     };
   }, []);
 

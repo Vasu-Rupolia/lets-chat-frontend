@@ -240,65 +240,119 @@ export default function HomePage() {
               //   </button>
               // </div>
 
+              // <div
+              //   key={user._id}
+              //   className="group bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden"
+              // >
+
+              //   {/* TOP GRADIENT */}
+              //   <div className="h-16 bg-gradient-to-r from-red-100 to-red-700"></div>
+
+              //   {/* CONTENT */}
+              //   <div className="px-4 pb-5 text-center -mt-8">
+
+              //     {/* AVATAR */}
+              //     <div className="w-16 h-16 mx-auto rounded-full border-4 border-white overflow-hidden bg-gray-200 shadow-md group-hover:scale-105 transition-transform duration-300">
+              //       <img
+              //         src={`http://85.121.120.156:5072/uploads/${user.image}`}
+              //         alt={user.name}
+              //         className="w-full h-full object-cover"
+              //       />
+              //     </div>
+
+              //     {/* NAME */}
+              //     <h2
+              //       onClick={() => router.push(`/profile/${user._id}`)}
+              //       className="mt-3 font-semibold text-gray-800 cursor-pointer hover:text-red-600 transition"
+              //     >
+              //       {user.name}
+              //     </h2>
+
+              //     {/* EMAIL */}
+              //     <p className="text-xs text-gray-500 mb-3">
+              //       {user.email}
+              //     </p>
+
+              //     {/* BUTTON */}
+              //     <button
+              //       onClick={() => sendRequest(user._id)}
+              //       disabled={user.isFriend || user.hasSentRequest || user.hasReceivedRequest}
+              //       className={`w-full mt-2 px-4 py-2 rounded-lg text-sm font-medium transition
+              //         ${
+              //           user.isFriend
+              //             ? "bg-pink-600 text-white cursor-not-allowed"
+              //             : user.hasSentRequest
+              //             ? "bg-gray-400 text-white cursor-not-allowed"
+              //             : user.hasReceivedRequest
+              //             ? "bg-gray-500 text-white cursor-not-allowed"
+              //             : "bg-black text-white hover:opacity-90 hover:cursor-pointer"
+              //         }
+              //       `}
+              //     >
+              //       {user.isFriend
+              //         ? "Friends"
+              //         : user.hasSentRequest
+              //         ? "Request Sent"
+              //         : user.hasReceivedRequest
+              //         ? "Request Received"
+              //         : "+ Add Friend"}
+              //     </button>
+
+              //   </div>
+              // </div>
+
               <div
                 key={user._id}
-                className="group bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden"
+                className="group bg-white rounded-2xl border border-gray-200 hover:border-red-400 hover:shadow-lg transition-all duration-300 p-5 flex flex-col items-center text-center"
               >
-
-                {/* TOP GRADIENT */}
-                <div className="h-16 bg-gradient-to-r from-red-100 to-red-700"></div>
-
-                {/* CONTENT */}
-                <div className="px-4 pb-5 text-center -mt-8">
-
-                  {/* AVATAR */}
-                  <div className="w-16 h-16 mx-auto rounded-full border-4 border-white overflow-hidden bg-gray-200 shadow-md group-hover:scale-105 transition-transform duration-300">
+                {/* AVATAR */}
+                <div className="relative">
+                  <div className="w-20 h-20 rounded-full overflow-hidden ring-2 ring-gray-200 group-hover:ring-red-400 transition">
                     <img
                       src={`http://85.121.120.156:5072/uploads/${user.image}`}
                       alt={user.name}
                       className="w-full h-full object-cover"
                     />
                   </div>
-
-                  {/* NAME */}
-                  <h2
-                    onClick={() => router.push(`/profile/${user._id}`)}
-                    className="mt-3 font-semibold text-gray-800 cursor-pointer hover:text-red-600 transition"
-                  >
-                    {user.name}
-                  </h2>
-
-                  {/* EMAIL */}
-                  <p className="text-xs text-gray-500 mb-3">
-                    {user.email}
-                  </p>
-
-                  {/* BUTTON */}
-                  <button
-                    onClick={() => sendRequest(user._id)}
-                    disabled={user.isFriend || user.hasSentRequest || user.hasReceivedRequest}
-                    className={`w-full mt-2 px-4 py-2 rounded-lg text-sm font-medium transition
-                      ${
-                        user.isFriend
-                          ? "bg-pink-600 text-white cursor-not-allowed"
-                          : user.hasSentRequest
-                          ? "bg-gray-400 text-white cursor-not-allowed"
-                          : user.hasReceivedRequest
-                          ? "bg-gray-500 text-white cursor-not-allowed"
-                          : "bg-black text-white hover:opacity-90 hover:cursor-pointer"
-                      }
-                    `}
-                  >
-                    {user.isFriend
-                      ? "Friends"
-                      : user.hasSentRequest
-                      ? "Request Sent"
-                      : user.hasReceivedRequest
-                      ? "Request Received"
-                      : "+ Add Friend"}
-                  </button>
-
                 </div>
+
+                {/* NAME */}
+                <h2
+                  onClick={() => router.push(`/profile/${user._id}`)}
+                  className="mt-4 font-semibold text-gray-800 hover:text-red-500 cursor-pointer transition"
+                >
+                  {user.name}
+                </h2>
+
+                {/* EMAIL */}
+                <p className="text-xs text-gray-500 mt-1 mb-4 truncate w-full">
+                  {user.email}
+                </p>
+
+                {/* BUTTON */}
+                <button
+                  onClick={() => sendRequest(user._id)}
+                  disabled={user.isFriend || user.hasSentRequest || user.hasReceivedRequest}
+                  className={`w-full px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200
+                    ${
+                      user.isFriend
+                        ? "bg-green-100 text-green-700 cursor-not-allowed"
+                        : user.hasSentRequest
+                        ? "bg-gray-200 text-gray-600 cursor-not-allowed"
+                        : user.hasReceivedRequest
+                        ? "bg-yellow-100 text-yellow-700 cursor-not-allowed"
+                        : "bg-red-500 text-white hover:bg-red-600 hover:scale-[1.02]"
+                    }
+                  `}
+                >
+                  {user.isFriend
+                    ? "Friends"
+                    : user.hasSentRequest
+                    ? "Request Sent"
+                    : user.hasReceivedRequest
+                    ? "Respond"
+                    : "+ Add Friend"}
+                </button>
               </div>
             ))}
           </div>

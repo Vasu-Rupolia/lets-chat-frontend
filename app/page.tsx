@@ -344,6 +344,15 @@ export default function HomePage() {
                       className="w-full h-full object-cover"
                     />
                   </div>
+
+                  {/* ONLINE DOT */}
+                  <span
+                    className={`absolute bottom-1 right-1 w-3 h-3 rounded-full border-2 border-white ${
+                      onlineUsers.includes(user._id!)
+                        ? "bg-green-500"
+                        : "bg-gray-400"
+                    }`}
+                  ></span>
                 </div>
 
                 {/* NAME */}

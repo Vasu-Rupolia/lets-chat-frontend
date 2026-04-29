@@ -145,6 +145,10 @@ export default function HomePage() {
       setOnlineUsers((prev) => prev.filter((id) => id !== userId));
     });
 
+    socket.on("online_users_list", (users: string[]) => {
+      setOnlineUsers(users);
+    });
+
     return () => socket.disconnect();
   }, []);
   useEffect(() => {

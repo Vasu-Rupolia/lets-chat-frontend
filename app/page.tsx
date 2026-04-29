@@ -120,7 +120,6 @@ export default function HomePage() {
   const [onlineUsers, setOnlineUsers] = useState<string[]>([]);
 
   const socketRef = useRef<any>(null);
-  const socket = socketRef.current;
 
   useEffect(() => {
     socketRef.current = io(
@@ -138,6 +137,7 @@ export default function HomePage() {
     });
 
     socket.on("user_online", (userId: string) => {
+      console.log("ONLINE EVENT:", userId);
       setOnlineUsers((prev) => [...new Set([...prev, userId])]);
     });
 

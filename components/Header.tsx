@@ -706,8 +706,24 @@ export default function Header({ onMenuClick }: HeaderProps) {
                 <p className="p-3 text-sm">No requests</p>
               ) : (
                 friendRequests.map((req: any) => (
-                  <div key={req._id} className="flex justify-between px-4 py-2 hover:bg-gray-100">
-                    <span>{req.sender?.name}</span>
+                  <div key={req._id} className="flex justify-between items-center px-4 py-2 hover:bg-gray-100">
+  
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 rounded-full bg-gray-200 overflow-hidden">
+                        {req.sender?.image ? (
+                          <img
+                            src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${req.sender.image}`}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <span className="text-xs">
+                            {req.sender?.name?.charAt(0)}
+                          </span>
+                        )}
+                      </div>
+
+                      <span className="text-sm">{req.sender?.name}</span>
+                    </div>
 
                     <div className="flex gap-2">
                       <button onClick={() => acceptRequest(req._id)}>
@@ -717,6 +733,7 @@ export default function Header({ onMenuClick }: HeaderProps) {
                         <X size={16} />
                       </button>
                     </div>
+
                   </div>
                 ))
               )}

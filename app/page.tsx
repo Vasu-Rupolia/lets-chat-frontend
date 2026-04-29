@@ -104,10 +104,11 @@
 
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { User } from "@/types";
 import API from "@/lib/api";
+import { io } from "socket.io-client";
 
 export default function HomePage() {
   
@@ -116,7 +117,36 @@ export default function HomePage() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [sentRequests, setSentRequests] = useState<string[]>([]);
+  const [onlineUsers, setOnlineUsers] = useState<string[]>([]);
 
+  const socketRef = useRef<any>(null);
+  const socket = socketRef.current;
+
+  useEffect(() => {
+    socketRef.current = io(
+      process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"
+    );
+
+    const socket = socketRef.current;
+
+    const user = JSON.parse(localStorage.getItem("user") || "{}");
+
+    socket.on("connect", () => {
+      if (user?._id) {
+        socket.emit("join", user._id);
+      }
+    });
+
+    socket.on("user_online", (userId: string) => {
+      setOnlineUsers((prev) => [...new Set([...prev, userId])]);
+    });
+
+    socket.on("user_offline", (userId: string) => {
+      setOnlineUsers((prev) => prev.filter((id) => id !== userId));
+    });
+
+    return () => socket.disconnect();
+  }, []);
   useEffect(() => {
     const fetchUsers = async () => {
         const token = localStorage.getItem("token");
@@ -178,7 +208,7 @@ export default function HomePage() {
       }
     );
 
-    // 🔥 Update UI instantly
+    // Update UI instantly
     setUsers((prev) =>
       prev.map((user) =>
         user._id === id

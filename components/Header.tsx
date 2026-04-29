@@ -456,6 +456,7 @@ export default function Header({ onMenuClick }: HeaderProps) {
   const [showRequests, setShowRequests] = useState(false);
   const [friendRequests, setFriendRequests] = useState<any[]>([]);
   const [requestCount, setRequestCount] = useState(0);
+  const [loadingRequests, setLoadingRequests] = useState(false);
 
   // SOCKET INIT + LISTENER
   useEffect(() => {
@@ -468,13 +469,16 @@ export default function Header({ onMenuClick }: HeaderProps) {
     socket.on("connect", () => {
       // const userId = localStorage.getItem("userId");
 
-      const userData = localStorage.getItem("user");
+      // const userData = localStorage.getItem("user");
 
-      let userId = null;
+      // let userId = null;
 
-      if (userData) {
-        userId = JSON.parse(userData)._id;
-      }
+      // if (userData) {
+      //   userId = JSON.parse(userData)._id;
+      // }
+
+      const userId = localStorage.getItem("userId");
+
       console.log("Socket connected:", socket.id);
 
       if (userId) {
@@ -571,6 +575,8 @@ export default function Header({ onMenuClick }: HeaderProps) {
 
     const fetchRequests = async () => {
       try {
+        setLoadingRequests(true);
+
         const res = await API.get("/users/friend-requests", {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -702,7 +708,9 @@ export default function Header({ onMenuClick }: HeaderProps) {
                 Friend Requests
               </div>
 
-              {friendRequests.length === 0 ? (
+              {loadingRequests ? (
+                <p className="p-3 text-sm">Loading...</p>
+              ):friendRequests.length === 0 ? (
                 <p className="p-3 text-sm">No requests</p>
               ) : (
                 friendRequests.map((req: any) => (

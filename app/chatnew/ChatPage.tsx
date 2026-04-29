@@ -575,7 +575,7 @@ export default function ChatPage() {
     setShowSidebar(false);
 
     if (pushUrl) {
-      router.push(`/chat?c=${chat._id}`);
+      router.push(`/chatnew?c=${chat._id}`);
     }
 
     try {

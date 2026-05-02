@@ -512,13 +512,9 @@ export default function ChatPage() {
   useEffect(() => {
     if (!socketRef.current) return;
 
-    socketRef.current.on("typing", ({ sender }: any) => {
-      if (sender === selectedChat?.user._id) setIsTyping(true);
-    });
+    socketRef.current.on("typing", () => setIsTyping(true));
 
-    socketRef.current.on("stop_typing", ({ sender }: any) => {
-      if (sender === selectedChat?.user._id) setIsTyping(false);
-    });
+    socketRef.current.on("stop_typing", () => setIsTyping(false));
 
     return () => {
       socketRef.current.off("typing");

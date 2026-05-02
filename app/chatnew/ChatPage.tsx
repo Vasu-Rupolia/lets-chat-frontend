@@ -735,7 +735,7 @@ export default function ChatPage() {
                   className={`max-w-[75%] md:max-w-xs px-3 py-2 rounded-lg text-sm break-words ${
                     msg.sender === currentUserId
                       ? "ml-auto bg-red-500 text-white"
-                      : "bg-gray-100 text-gray-900"
+                      : "bg-blue-400 text-gray-900"
                   }`}
                 >
                   {msg.text}

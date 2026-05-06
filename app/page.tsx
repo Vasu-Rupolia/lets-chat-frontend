@@ -161,7 +161,7 @@ export default function HomePage() {
         }
 
         try {
-            const res = await API.get("/users/list", {
+            const res = await API.get("/users", {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }

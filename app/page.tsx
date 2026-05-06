@@ -118,6 +118,7 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true);
   const [sentRequests, setSentRequests] = useState<string[]>([]);
   const [onlineUsers, setOnlineUsers] = useState<string[]>([]);
+  const [filter, setFilter] = useState("matched");
 
   const socketRef = useRef<any>(null);
 
@@ -152,28 +153,17 @@ export default function HomePage() {
     return () => socket.disconnect();
   }, []);
   useEffect(() => {
-    const fetchUsers = async () => {
-        const token = localStorage.getItem("token");
+    const fetchUsers = async (selectedFilter = "matched") => {
+      const token = localStorage.getItem("token");
 
-        if (!token) {
-            router.push("/login");
-            return;
+      const res = await API.get("/users", {
+        params: { filter: selectedFilter },
+        headers: {
+          Authorization: `Bearer ${token}`
         }
+      });
 
-        try {
-            const res = await API.get("/users", {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
-
-            console.log("Fetched users:", res.data.data);
-            setUsers(res.data.data);
-            setLoading(false);
-        } catch (err) {
-            console.error(err);
-            setLoading(false);
-        }
+      setUsers(res.data.data);
     };
 
     fetchUsers();
@@ -240,6 +230,30 @@ export default function HomePage() {
 
         {/* Main Content */}
         <main className="flex-1 p-4 md:p-6">
+
+          <div className="flex gap-3 mb-4">
+            <button
+              onClick={() => setFilter("matched")}
+              className={`px-4 py-2 rounded ${
+                filter === "matched"
+                  ? "bg-red-500 text-white"
+                  : "bg-gray-200 text-gray-700"
+              }`}
+            >
+              Matched
+            </button>
+
+            <button
+              onClick={() => setFilter("all")}
+              className={`px-4 py-2 rounded ${
+                filter === "all"
+                  ? "bg-red-500 text-white"
+                  : "bg-gray-200 text-gray-700"
+              }`}
+            >
+              All Users
+            </button>
+          </div>
 
           <div className="grid gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {users.map((user) => (
@@ -371,6 +385,12 @@ export default function HomePage() {
                 <p className="text-xs text-gray-500 mt-1 mb-4 truncate w-full">
                   {user.email}
                 </p>
+
+                {user.matchPercentage! > 0 && (
+                  <p className="text-xs text-green-600 mt-1">
+                    {user.matchPercentage}% match
+                  </p>
+                )}
 
                 {/* BUTTON */}
                 <button

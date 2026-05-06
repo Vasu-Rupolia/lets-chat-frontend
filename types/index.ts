@@ -9,6 +9,7 @@ export interface User {
   hasSentRequest?: boolean;
   hasReceivedRequest?: boolean;
   isFriend?: boolean;
+  matchPercentage?: number;
 }
 
 export interface Message {

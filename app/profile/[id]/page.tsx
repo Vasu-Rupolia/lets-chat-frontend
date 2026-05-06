@@ -20,6 +20,9 @@ export default function ProfilePage() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const [showImageModal, setShowImageModal] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  
   const IMAGE_BASE_URL = process.env.NEXT_PUBLIC_IMAGE_BASE_URL;
 
   useEffect(() => {
@@ -57,6 +60,37 @@ export default function ProfilePage() {
     return age;
  };
 
+ const handleImageUpload = async (e: any) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("image", file);
+
+    try {
+      setUploading(true);
+
+      const token = localStorage.getItem("token");
+
+      const res = await API.post("/users/upload-profile", formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      // update UI instantly
+      setUser((prev: any) => ({
+        ...prev,
+        image: res.data.image,
+      }));
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setUploading(false);
+    }
+  };
+
   if (loading) {
     return <div className="p-6 text-gray-600">Loading profile...</div>;
   }
@@ -77,7 +111,7 @@ export default function ProfilePage() {
         <div className="bg-white rounded-xl shadow-md p-6 relative -mt-16">
 
           {/* AVATAR */}
-          <div className="absolute -top-12 left-6">
+          {/* <div className="absolute -top-12 left-6">
             <div className="w-24 h-24 rounded-full border-4 border-white overflow-hidden bg-gray-200">
               {user.image ? (
                 <img
@@ -90,6 +124,35 @@ export default function ProfilePage() {
                   {user.name?.charAt(0)}
                 </div>
               )}
+            </div>
+          </div> */}
+
+          <div className="absolute -top-12 left-6">
+            <div
+              className="w-24 h-24 rounded-full border-4 border-white overflow-hidden bg-gray-200 cursor-pointer relative group"
+              onClick={() => setShowImageModal(true)}
+            >
+              {user.image ? (
+                <img
+                  src={`${IMAGE_BASE_URL}${user.image}`}
+                  alt={user.name}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="flex items-center justify-center w-full h-full text-2xl font-bold text-gray-600">
+                  {user.name?.charAt(0)}
+                </div>
+              )}
+
+              {/* EDIT ICON OVERLAY */}
+              <label className="absolute bottom-0 right-0 bg-black/60 text-white text-xs px-2 py-1 rounded cursor-pointer opacity-0 group-hover:opacity-100 transition">
+                Edit
+                <input
+                  type="file"
+                  className="hidden"
+                  onChange={handleImageUpload}
+                />
+              </label>
             </div>
           </div>
 
@@ -144,6 +207,33 @@ export default function ProfilePage() {
         </div>
 
       </div>
+
+      {showImageModal && (
+        <div
+          className="fixed inset-0 bg-black/80 flex items-center justify-center z-50"
+          onClick={() => setShowImageModal(false)}
+        >
+          <div className="relative max-w-lg w-full p-4">
+            <img
+              src={
+                user?.image
+                  ? `${IMAGE_BASE_URL}${user.image}`
+                  : "/default-avatar.png"
+              }
+              className="w-full h-auto rounded-lg"
+            />
+
+            <button
+              onClick={() => setShowImageModal(false)}
+              className="absolute top-2 right-2 bg-white text-black px-2 py-1 rounded"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
     </div>
+
+    
   );
 }

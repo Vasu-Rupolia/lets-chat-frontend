@@ -412,10 +412,19 @@ export default function ProfilePage() {
         },
       });
 
-      setUser((prev: any) => ({
-        ...prev,
-        image: res.data.data.image,
-      }));
+      // setUser((prev: any) => ({
+      //   ...prev,
+      //   image: res.data.data.image,
+      // }));
+
+      const updatedUser = res.data.data;
+
+      setUser(updatedUser);
+
+      localStorage.setItem(
+        "user",
+        JSON.stringify(updatedUser)
+      );
 
       setShowImageModal(false);
 

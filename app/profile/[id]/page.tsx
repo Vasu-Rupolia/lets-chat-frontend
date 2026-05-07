@@ -83,7 +83,7 @@ export default function ProfilePage() {
       // update UI instantly
       setUser((prev: any) => ({
         ...prev,
-        image: res.data.image,
+        image: res.data.data.image,
       }));
     } catch (err) {
       console.error(err);

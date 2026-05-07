@@ -129,8 +129,10 @@ export default function ProfilePage() {
           </div> */}
 
           <div className="absolute -top-12 left-6">
+
+            {/* PROFILE IMAGE */}
             <div
-              className="w-24 h-24 rounded-full border-4 border-white overflow-hidden bg-gray-200 cursor-pointer relative group"
+              className="w-24 h-24 rounded-full border-4 border-white overflow-hidden bg-gray-200 cursor-pointer"
               onClick={() => setShowImageModal(true)}
             >
               {user.image ? (
@@ -144,18 +146,20 @@ export default function ProfilePage() {
                   {user.name?.charAt(0)}
                 </div>
               )}
-
-              {/* EDIT ICON OVERLAY */}
-              <label className="absolute bottom-1 right-1 bg-black/70 text-white p-2 rounded-full cursor-pointer opacity-0 group-hover:opacity-100 transition hover:bg-black">
-                <Camera size={16} />
-
-                <input
-                  type="file"
-                  className="hidden"
-                  onChange={handleImageUpload}
-                />
-              </label>
             </div>
+
+            {/* CAMERA BUTTON */}
+            <label className="absolute bottom-0 right-0 bg-black text-white p-2 rounded-full cursor-pointer shadow-md hover:bg-gray-800">
+              
+              <Camera size={16} />
+
+              <input
+                type="file"
+                className="hidden"
+                onChange={handleImageUpload}
+              />
+            </label>
+
           </div>
 
           {/* USER INFO */}

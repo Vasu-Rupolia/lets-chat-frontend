@@ -4,6 +4,7 @@ import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import API from "@/lib/api";
 import Header from "@/components/Header";
+import { Camera } from "lucide-react";
 
 type User = {
   _id?: string;
@@ -145,8 +146,9 @@ export default function ProfilePage() {
               )}
 
               {/* EDIT ICON OVERLAY */}
-              <label className="absolute bottom-0 right-0 bg-black/60 text-white text-xs px-2 py-1 rounded cursor-pointer opacity-0 group-hover:opacity-100 transition">
-                Edit
+              <label className="absolute bottom-1 right-1 bg-black/70 text-white p-2 rounded-full cursor-pointer opacity-0 group-hover:opacity-100 transition hover:bg-black">
+                <Camera size={16} />
+
                 <input
                   type="file"
                   className="hidden"

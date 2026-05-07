@@ -337,66 +337,78 @@ export default function ProfilePage() {
 
   // CREATE CROPPED IMAGE
   const getCroppedImg = async (
-    imageSrc: string,
-    pixelCrop: any
-  ): Promise<Blob | null> => {
-    const image = new Image();
+  imageSrc: string,
+  pixelCrop: any
+): Promise<File | null> => {
+  const image = new Image();
 
-    image.src = imageSrc;
+  image.src = imageSrc;
 
-    await new Promise((resolve) => {
-      image.onload = resolve;
-    });
+  await new Promise((resolve) => {
+    image.onload = resolve;
+  });
 
-    const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d");
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d");
 
-    if (!ctx) return null;
+  if (!ctx) return null;
 
-    canvas.width = pixelCrop.width;
-    canvas.height = pixelCrop.height;
+  canvas.width = pixelCrop.width;
+  canvas.height = pixelCrop.height;
 
-    ctx.drawImage(
-      image,
-      pixelCrop.x,
-      pixelCrop.y,
-      pixelCrop.width,
-      pixelCrop.height,
-      0,
-      0,
-      pixelCrop.width,
-      pixelCrop.height
+  ctx.drawImage(
+    image,
+    pixelCrop.x,
+    pixelCrop.y,
+    pixelCrop.width,
+    pixelCrop.height,
+    0,
+    0,
+    pixelCrop.width,
+    pixelCrop.height
+  );
+
+  return new Promise((resolve) => {
+    canvas.toBlob(
+      (blob) => {
+        if (!blob) {
+          resolve(null);
+          return;
+        }
+
+        const file = new File([blob], "profile.jpg", {
+          type: "image/jpeg",
+        });
+
+        resolve(file);
+      },
+      "image/jpeg",
+      1
     );
-
-    return new Promise((resolve) => {
-      canvas.toBlob((blob) => {
-        resolve(blob);
-      }, "image/jpeg");
-    });
-  };
+  });
+};
 
   // UPLOAD CROPPED IMAGE
   const handleUploadCroppedImage = async () => {
     try {
       setUploading(true);
 
-      const croppedBlob = await getCroppedImg(
+      const croppedFile = await getCroppedImg(
         selectedImage,
         croppedAreaPixels
       );
 
-      if (!croppedBlob) return;
+      if (!croppedFile) return;
 
       const formData = new FormData();
 
-      formData.append("image", croppedBlob, "profile.jpg");
+      formData.append("image", croppedFile);
 
       const token = localStorage.getItem("token");
 
       const res = await API.post("/users/upload-profile", formData, {
         headers: {
           Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data",
         },
       });
 

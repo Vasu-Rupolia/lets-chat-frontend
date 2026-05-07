@@ -406,7 +406,7 @@ export default function ProfilePage() {
 
       const token = localStorage.getItem("token");
 
-      const res = await API.post("/users/update", formData, {
+      const res = await API.put("/users/update", formData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

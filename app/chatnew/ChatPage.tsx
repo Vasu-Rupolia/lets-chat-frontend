@@ -3,6 +3,7 @@
 // import { useEffect, useState, useRef } from "react";
 // import API from "@/lib/api";
 // import { io } from "socket.io-client";
+// import { useRouter, useSearchParams } from "next/navigation";
 
 // type Conversation = {
 //   _id: string;
@@ -20,18 +21,28 @@
 //   image?: string;
 // };
 
+// // type Message = {
+// //   _id?: string;
+// //   text: string;
+// //   sender: string;
+// //   conversationId?: string;
+// // };
+
 // type Message = {
 //   _id?: string;
-//   text: string;
+//   text?: string;
 //   sender: string;
 //   conversationId?: string;
-// };
 
-// type TypingPayload = {
-//   sender: string;
+//   type?: "text" | "voice";
+
+//   audio?: string;
 // };
 
 // export default function ChatPage() {
+//   const router = useRouter();
+//   const searchParams = useSearchParams();
+
 //   const [conversations, setConversations] = useState<Conversation[]>([]);
 //   const [friends, setFriends] = useState<Friend[]>([]);
 //   const [selectedChat, setSelectedChat] = useState<Conversation | null>(null);
@@ -42,32 +53,93 @@
 //   const [token, setToken] = useState<string | null>(null);
 //   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 //   const [onlineUsers, setOnlineUsers] = useState<string[]>([]);
+//   const [showSidebar, setShowSidebar] = useState(true);
 
 //   const socketRef = useRef<any>(null);
 //   const messagesEndRef = useRef<HTMLDivElement>(null);
+//   const typingTimeout = useRef<any>(null);
 
 //   const IMAGE_BASE_URL = process.env.NEXT_PUBLIC_IMAGE_BASE_URL;
+
 //   const [isTyping, setIsTyping] = useState(false);
-//   let typingTimeout = useRef<any>(null);
+//   const [recording, setRecording] = useState(false);
 
-//   useEffect(() => {
-//     if (!socketRef.current) return;
+//   const mediaRecorderRef = useRef<any>(null);
+//   const audioChunksRef = useRef<Blob[]>([]);
 
-//     socketRef.current.on("user_online", (userId: string) => {
-//         setOnlineUsers((prev) => [...prev, userId]);
-//     });
+//   const AUDIO_BASE_URL = process.env.NEXT_PUBLIC_IMAGE_BASE_URL;
 
-//     socketRef.current.on("user_offline", (userId: string) => {
-//         setOnlineUsers((prev) => prev.filter((id) => id !== userId));
-//     });
+//   const startRecording = async () => {
+//     try {
+//       const stream = await navigator.mediaDevices.getUserMedia({
+//         audio: true,
+//       });
 
-//     return () => {
-//         socketRef.current.off("user_online");
-//         socketRef.current.off("user_offline");
-//     };
-//   }, []);
+//       const mediaRecorder = new MediaRecorder(stream);
 
-//   // 🔥 Load token + user
+//       mediaRecorderRef.current = mediaRecorder;
+
+//       audioChunksRef.current = [];
+
+//       mediaRecorder.ondataavailable = (event) => {
+//         audioChunksRef.current.push(event.data);
+//       };
+
+//       mediaRecorder.onstop = async () => {
+//         try {
+//           const audioBlob = new Blob(
+//             audioChunksRef.current,
+//             {
+//               type: "audio/webm",
+//             }
+//           );
+
+//           const formData = new FormData();
+
+//           formData.append(
+//             "conversationId",
+//             selectedChat!._id
+//           );
+
+//           formData.append("type", "voice");
+
+//           formData.append(
+//             "audio",
+//             audioBlob,
+//             "voice.webm"
+//           );
+
+//           await API.post(
+//             "/chat/messages",
+//             formData,
+//             {
+//               headers: {
+//                 Authorization: `Bearer ${token}`,
+//               },
+//             }
+//           );
+
+//         } catch (err) {
+//           console.error(err);
+//         }
+//       };
+
+//       mediaRecorder.start();
+
+//       setRecording(true);
+
+//     } catch (err) {
+//       console.error(err);
+//     }
+//   };
+
+//   const stopRecording = () => {
+//     mediaRecorderRef.current?.stop();
+
+//     setRecording(false);
+//   };
+
+//   // LOAD USER
 //   useEffect(() => {
 //     const storedToken = localStorage.getItem("token");
 //     const user = JSON.parse(localStorage.getItem("user") || "{}");
@@ -76,7 +148,7 @@
 //     setCurrentUserId(user?._id || null);
 //   }, []);
 
-//   // 🔥 CONNECT SOCKET
+//   // SOCKET CONNECT
 //   useEffect(() => {
 //     if (!currentUserId) return;
 
@@ -84,22 +156,26 @@
 
 //     socketRef.current.emit("join", currentUserId);
 
-//     return () => {
-//       socketRef.current.disconnect();
-//     };
+//     socketRef.current.on("user_online", (id: string) => {
+//       setOnlineUsers((prev) => [...new Set([...prev, id])]);
+//     });
+
+//     socketRef.current.on("user_offline", (id: string) => {
+//       setOnlineUsers((prev) => prev.filter((u) => u !== id));
+//     });
+
+//     return () => socketRef.current.disconnect();
 //   }, [currentUserId]);
 
-//   // 🔥 LISTEN REAL-TIME MESSAGES
+//   // RECEIVE MESSAGE
 //   useEffect(() => {
 //     if (!socketRef.current) return;
 
 //     socketRef.current.on("receive_message", (msg: Message) => {
-//       // update messages (only if chat open)
 //       if (msg.conversationId === selectedChat?._id) {
 //         setMessages((prev) => [...prev, msg]);
 //       }
 
-//       // update sidebar
 //       setConversations((prev) =>
 //         prev.map((c) =>
 //           c._id === msg.conversationId
@@ -109,25 +185,16 @@
 //       );
 //     });
 
-//     return () => {
-//       socketRef.current.off("receive_message");
-//     };
+//     return () => socketRef.current.off("receive_message");
 //   }, [selectedChat]);
 
+//   // TYPING
 //   useEffect(() => {
 //     if (!socketRef.current) return;
 
-//     socketRef.current.on("typing", ({ sender }: TypingPayload) => {
-//       if (sender === selectedChat?.user._id) {
-//         setIsTyping(true);
-//       }
-//     });
+//     socketRef.current.on("typing", () => setIsTyping(true));
 
-//     socketRef.current.on("stop_typing", ({ sender }: TypingPayload) => {
-//       if (sender === selectedChat?.user._id) {
-//         setIsTyping(false);
-//       }
-//     });
+//     socketRef.current.on("stop_typing", () => setIsTyping(false));
 
 //     return () => {
 //       socketRef.current.off("typing");
@@ -135,7 +202,7 @@
 //     };
 //   }, [selectedChat]);
 
-//   // 🔥 Fetch conversations + friends
+//   // FETCH DATA
 //   useEffect(() => {
 //     if (!token) return;
 
@@ -162,14 +229,30 @@
 //     fetchData();
 //   }, [token]);
 
-//   // 🔥 Scroll
+//   // LOAD CHAT FROM URL
+//   useEffect(() => {
+//     const chatId = searchParams.get("c");
+//     if (!chatId || conversations.length === 0) return;
+
+//     const chat = conversations.find((c) => c._id === chatId);
+//     if (chat && selectedChat?._id !== chatId) {
+//       openChat(chat, false);
+//     }
+//   }, [searchParams, conversations]);
+
+//   // SCROLL
 //   useEffect(() => {
 //     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
 //   }, [messages]);
 
-//   // 🔥 Open chat
-//   const openChat = async (chat: Conversation) => {
+//   // OPEN CHAT
+//   const openChat = async (chat: Conversation, pushUrl = true) => {
 //     setSelectedChat(chat);
+//     setShowSidebar(false);
+
+//     if (pushUrl) {
+//       router.push(`/chatnew?c=${chat._id}`);
+//     }
 
 //     try {
 //       const res = await API.get(`/chat/messages/${chat._id}`, {
@@ -182,7 +265,7 @@
 //     }
 //   };
 
-//   // 🔥 Start chat
+//   // START CHAT
 //   const startChat = async (friend: Friend) => {
 //     try {
 //       const res = await API.post(
@@ -191,32 +274,25 @@
 //         { headers: { Authorization: `Bearer ${token}` } }
 //       );
 
-//       const existing = conversations.find(
-//         (c) => c._id === res.data._id
-//       );
+//       const existing = conversations.find((c) => c._id === res.data._id);
 
-//       if (existing) {
-//         openChat(existing);
-//         return;
-//       }
+//       if (existing) return openChat(existing);
 
 //       const newChat: Conversation = {
 //         _id: res.data._id,
 //         user: friend,
-//         lastMessage: "",
 //       };
 
 //       setConversations((prev) => [newChat, ...prev]);
 //       openChat(newChat);
-
 //     } catch (err) {
 //       console.error(err);
 //     }
 //   };
 
-//   // 🔥 Send message (API only)
+//   // SEND MESSAGE
 //   const sendMessage = async () => {
-//     if (!input.trim() || !selectedChat || !token) return;
+//     if (!input.trim() || !selectedChat) return;
 
 //     try {
 //       await API.post(
@@ -228,8 +304,7 @@
 //         { headers: { Authorization: `Bearer ${token}` } }
 //       );
 
-//       setInput(""); // no manual push
-
+//       setInput("");
 //     } catch (err) {
 //       console.error(err);
 //     }
@@ -238,44 +313,37 @@
 //   if (loading) return <div className="p-6">Loading...</div>;
 
 //   return (
-//     <div className="h-screen flex bg-gray-100">
+//     <div className="h-screen flex bg-gray-100 overflow-hidden">
 
 //       {/* SIDEBAR */}
-//       <div className="w-full md:w-1/3 lg:w-1/4 bg-white border-r overflow-y-auto">
+//       <div
+//         className={`fixed md:static z-20 top-0 left-0 h-full w-full md:w-1/3 lg:w-1/4 bg-white border-r overflow-y-auto transition-transform duration-300
+//         ${showSidebar ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}
+//       >
+//         <h1 className="p-4 font-bold text-lg border-b">Chats</h1>
 
-//         <h1 className="p-4 font-bold text-lg border-b text-gray-600">
-//           Chats
-//         </h1>
-
-//         {/* EXISTING CHATS */}
 //         {conversations.map((chat) => (
 //           <div
 //             key={chat._id}
 //             onClick={() => openChat(chat)}
 //             className={`flex items-center gap-3 p-3 cursor-pointer hover:bg-gray-100 ${
-//               selectedChat?._id === chat._id ? "bg-red-200" : ""
+//               selectedChat?._id === chat._id ? "bg-red-100" : ""
 //             }`}
 //           >
-//             <div className="w-10 h-10 rounded-full bg-gray-300 overflow-hidden">
-//               {chat.user.image ? (
+//             <div className="relative w-10 h-10 rounded-full bg-gray-300 overflow-hidden">
+//               {chat.user.image && (
 //                 <img
 //                   src={`${IMAGE_BASE_URL}${chat.user.image}`}
 //                   className="w-full h-full object-cover"
 //                 />
-//               ) : (
-//                 <div className="flex items-center justify-center h-full text-sm font-bold text-gray-600">
-//                   {chat.user.name.charAt(0)}
-//                 </div>
 //               )}
 //               {onlineUsers.includes(chat.user._id) && (
-//                 <span className="text-green-500 text-xs">●</span>
+//                 <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></span>
 //               )}
 //             </div>
 
-//             <div className="flex-1 min-w-0">
-//               <p className="text-sm font-medium truncate text-gray-600">
-//                 {chat.user.name}
-//               </p>
+//             <div className="flex-1">
+//               <p className="text-sm font-medium">{chat.user.name}</p>
 //               <p className="text-xs text-gray-500 truncate">
 //                 {chat.lastMessage || "Start conversation"}
 //               </p>
@@ -283,7 +351,6 @@
 //           </div>
 //         ))}
 
-//         {/* NEW CHAT */}
 //         <div className="p-3 text-xs text-gray-500 border-t">
 //           Start new chat
 //         </div>
@@ -295,36 +362,40 @@
 //             className="flex items-center gap-3 p-3 cursor-pointer hover:bg-gray-100"
 //           >
 //             <div className="w-10 h-10 rounded-full bg-gray-300 overflow-hidden">
-//               {friend.image ? (
+//               {friend.image && (
 //                 <img
 //                   src={`${IMAGE_BASE_URL}${friend.image}`}
 //                   className="w-full h-full object-cover"
 //                 />
-//               ) : (
-//                 <div className="flex items-center justify-center h-full text-sm font-bold text-gray-600">
-//                   {friend.name.charAt(0)}
-//                 </div>
 //               )}
-              
 //             </div>
-
-//             <p className="text-sm text-gray-600">{friend.name}</p>
+//             <p className="text-sm">{friend.name}</p>
 //           </div>
 //         ))}
 //       </div>
 
-//       {/* CHAT WINDOW */}
-//       <div className="flex-1 flex flex-col">
+//       {/* CHAT */}
+//       <div className="flex-1 flex flex-col w-full">
 
 //         {!selectedChat ? (
-//           <div className="flex-1 flex items-center justify-center text-gray-600">
+//           <div className="flex-1 flex items-center justify-center text-gray-500">
 //             Select a chat
 //           </div>
 //         ) : (
 //           <>
 //             {/* HEADER */}
 //             <div className="p-4 border-b bg-white flex items-center gap-3">
-//               <div className="w-10 h-10 rounded-full bg-gray-300 overflow-hidden">
+//               <button
+//                 onClick={() => {
+//                   setShowSidebar(true);
+//                   router.push("/chat");
+//                 }}
+//                 className="md:hidden text-lg"
+//               >
+//                 ←
+//               </button>
+
+//               <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-300">
 //                 {selectedChat.user.image && (
 //                   <img
 //                     src={`${IMAGE_BASE_URL}${selectedChat.user.image}`}
@@ -333,67 +404,62 @@
 //                 )}
 //               </div>
 
-//               <h2 className="font-semibold text-gray-700">
-//                 {selectedChat.user.name}
-//               </h2>
+//               <h2 className="font-semibold">{selectedChat.user.name}</h2>
 //             </div>
 
 //             {/* MESSAGES */}
 //             <div className="flex-1 overflow-y-auto p-4 space-y-2">
 //               {messages.map((msg, i) => (
 //                 <div
-//                   key={msg._id || i}
-//                   className={`max-w-xs px-3 py-2 rounded-lg text-sm text-gray-600 ${
+//                   key={i}
+//                   className={`max-w-[75%] md:max-w-xs px-3 py-2 rounded-lg text-sm break-words ${
 //                     msg.sender === currentUserId
-//                       ? "ml-auto bg-red-200"
-//                       : "bg-gray-200"
+//                       ? "ml-auto bg-red-500 text-white"
+//                       : "bg-blue-400 text-gray-900"
 //                   }`}
 //                 >
 //                   {msg.text}
 //                 </div>
 //               ))}
+
 //               <div ref={messagesEndRef} />
 //             </div>
 
-//               {isTyping && (
-//                 <div className="text-xs text-gray-500 px-2">
-//                   {selectedChat.user.name} is typing...
-//                 </div>
-//               )}
+//             {isTyping && (
+//               <div className="text-xs text-gray-500 px-4">
+//                 {selectedChat.user.name} is typing...
+//               </div>
+//             )}
 
 //             {/* INPUT */}
-//             <div className="p-3 bg-white border-t flex gap-2">
+//             <div className="p-3 bg-white border-t flex gap-2 sticky bottom-0">
 //               <input
 //                 value={input}
-//                 // onChange={(e) => setInput(e.target.value)}/
 //                 onChange={(e) => {
 //                   setInput(e.target.value);
 
-//                   if (!socketRef.current || !selectedChat || !currentUserId) return;
-
-//                   socketRef.current.emit("typing", {
+//                   socketRef.current?.emit("typing", {
 //                     sender: currentUserId,
 //                     receiver: selectedChat.user._id,
 //                   });
 
-//                   // stop typing after delay
-//                   if (typingTimeout.current) clearTimeout(typingTimeout.current);
+//                   clearTimeout(typingTimeout.current);
 
 //                   typingTimeout.current = setTimeout(() => {
-//                     socketRef.current.emit("stop_typing", {
+//                     socketRef.current?.emit("stop_typing", {
 //                       sender: currentUserId,
 //                       receiver: selectedChat.user._id,
 //                     });
 //                   }, 800);
 //                 }}
-//                 className="flex-1 border rounded-full px-4 py-2 text-sm text-gray-600"
+//                 className="flex-1 border rounded-full px-4 py-2 text-sm"
 //                 placeholder="Type message..."
 //                 onKeyDown={(e) => e.key === "Enter" && sendMessage()}
 //               />
 
 //               <button
 //                 onClick={sendMessage}
-//                 className="bg-blue-500 text-white px-4 py-2 rounded-full"
+//                 className="bg-red-500 text-white px-4 py-2 rounded-full"
 //               >
 //                 Send
 //               </button>
@@ -411,6 +477,15 @@ import { useEffect, useState, useRef } from "react";
 import API from "@/lib/api";
 import { io } from "socket.io-client";
 import { useRouter, useSearchParams } from "next/navigation";
+
+import {
+  Send,
+  Mic,
+  Square,
+  ArrowLeft,
+  Phone,
+  Video,
+} from "lucide-react";
 
 type Conversation = {
   _id: string;
@@ -430,9 +505,15 @@ type Friend = {
 
 type Message = {
   _id?: string;
-  text: string;
+  text?: string;
   sender: string;
   conversationId?: string;
+
+  type?: "text" | "voice";
+
+  audio?: string;
+
+  createdAt?: string;
 };
 
 export default function ChatPage() {
@@ -441,34 +522,74 @@ export default function ChatPage() {
 
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [friends, setFriends] = useState<Friend[]>([]);
-  const [selectedChat, setSelectedChat] = useState<Conversation | null>(null);
+  const [selectedChat, setSelectedChat] =
+    useState<Conversation | null>(null);
+
   const [messages, setMessages] = useState<Message[]>([]);
+
   const [input, setInput] = useState("");
+
   const [loading, setLoading] = useState(true);
 
   const [token, setToken] = useState<string | null>(null);
-  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+
+  const [currentUserId, setCurrentUserId] =
+    useState<string | null>(null);
+
   const [onlineUsers, setOnlineUsers] = useState<string[]>([]);
+
   const [showSidebar, setShowSidebar] = useState(true);
-
-  const socketRef = useRef<any>(null);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-  const typingTimeout = useRef<any>(null);
-
-  const IMAGE_BASE_URL = process.env.NEXT_PUBLIC_IMAGE_BASE_URL;
 
   const [isTyping, setIsTyping] = useState(false);
 
+  const [recording, setRecording] = useState(false);
+
+  const [uploadingVoice, setUploadingVoice] = useState(false);
+
+  const socketRef = useRef<any>(null);
+
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
+
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const typingTimeout = useRef<any>(null);
+
+  const mediaRecorderRef = useRef<any>(null);
+
+  const audioChunksRef = useRef<Blob[]>([]);
+
+  const pageRef = useRef(1);
+
+  const hasMoreRef = useRef(true);
+
+  const loadingMoreRef = useRef(false);
+
+  const IMAGE_BASE_URL =
+    process.env.NEXT_PUBLIC_IMAGE_BASE_URL;
+
+  const AUDIO_BASE_URL =
+    process.env.NEXT_PUBLIC_IMAGE_BASE_URL;
+
+  // =========================================
   // LOAD USER
+  // =========================================
+
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
-    const user = JSON.parse(localStorage.getItem("user") || "{}");
+
+    const user = JSON.parse(
+      localStorage.getItem("user") || "{}"
+    );
 
     setToken(storedToken);
+
     setCurrentUserId(user?._id || null);
   }, []);
 
-  // SOCKET CONNECT
+  // =========================================
+  // SOCKET
+  // =========================================
+
   useEffect(() => {
     if (!currentUserId) return;
 
@@ -481,48 +602,78 @@ export default function ChatPage() {
     });
 
     socketRef.current.on("user_offline", (id: string) => {
-      setOnlineUsers((prev) => prev.filter((u) => u !== id));
-    });
-
-    return () => socketRef.current.disconnect();
-  }, [currentUserId]);
-
-  // RECEIVE MESSAGE
-  useEffect(() => {
-    if (!socketRef.current) return;
-
-    socketRef.current.on("receive_message", (msg: Message) => {
-      if (msg.conversationId === selectedChat?._id) {
-        setMessages((prev) => [...prev, msg]);
-      }
-
-      setConversations((prev) =>
-        prev.map((c) =>
-          c._id === msg.conversationId
-            ? { ...c, lastMessage: msg.text }
-            : c
-        )
+      setOnlineUsers((prev) =>
+        prev.filter((u) => u !== id)
       );
     });
 
-    return () => socketRef.current.off("receive_message");
-  }, [selectedChat]);
+    return () => {
+      socketRef.current.disconnect();
+    };
+  }, [currentUserId]);
 
-  // TYPING
+  // =========================================
+  // RECEIVE MESSAGE
+  // =========================================
+
   useEffect(() => {
     if (!socketRef.current) return;
 
-    socketRef.current.on("typing", () => setIsTyping(true));
+    socketRef.current.on(
+      "receive_message",
+      (msg: Message) => {
+        if (msg.conversationId === selectedChat?._id) {
+          setMessages((prev) => [...prev, msg]);
 
-    socketRef.current.on("stop_typing", () => setIsTyping(false));
+          scrollToBottom();
+        }
+
+        setConversations((prev) =>
+          prev.map((c) =>
+            c._id === msg.conversationId
+              ? {
+                  ...c,
+                  lastMessage:
+                    msg.type === "voice"
+                      ? "🎤 Voice message"
+                      : msg.text,
+                }
+              : c
+          )
+        );
+      }
+    );
+
+    return () => {
+      socketRef.current.off("receive_message");
+    };
+  }, [selectedChat]);
+
+  // =========================================
+  // TYPING
+  // =========================================
+
+  useEffect(() => {
+    if (!socketRef.current) return;
+
+    socketRef.current.on("typing", () => {
+      setIsTyping(true);
+    });
+
+    socketRef.current.on("stop_typing", () => {
+      setIsTyping(false);
+    });
 
     return () => {
       socketRef.current.off("typing");
       socketRef.current.off("stop_typing");
     };
-  }, [selectedChat]);
+  }, []);
 
+  // =========================================
   // FETCH DATA
+  // =========================================
+
   useEffect(() => {
     if (!token) return;
 
@@ -530,14 +681,20 @@ export default function ChatPage() {
       try {
         const [convRes, friendRes] = await Promise.all([
           API.get("/chat/conversations", {
-            headers: { Authorization: `Bearer ${token}` },
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
           }),
+
           API.get("/users/friends", {
-            headers: { Authorization: `Bearer ${token}` },
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
           }),
         ]);
 
         setConversations(convRes.data);
+
         setFriends(friendRes.data.data);
       } catch (err) {
         console.error(err);
@@ -549,68 +706,190 @@ export default function ChatPage() {
     fetchData();
   }, [token]);
 
-  // LOAD CHAT FROM URL
+  // =========================================
+  // URL CHAT
+  // =========================================
+
   useEffect(() => {
     const chatId = searchParams.get("c");
+
     if (!chatId || conversations.length === 0) return;
 
-    const chat = conversations.find((c) => c._id === chatId);
+    const chat = conversations.find(
+      (c) => c._id === chatId
+    );
+
     if (chat && selectedChat?._id !== chatId) {
       openChat(chat, false);
     }
   }, [searchParams, conversations]);
 
+  // =========================================
   // SCROLL
+  // =========================================
+
+  const scrollToBottom = () => {
+    setTimeout(() => {
+      messagesEndRef.current?.scrollIntoView({
+        behavior: "smooth",
+      });
+    }, 100);
+  };
+
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    scrollToBottom();
   }, [messages]);
 
+  // =========================================
   // OPEN CHAT
-  const openChat = async (chat: Conversation, pushUrl = true) => {
+  // =========================================
+
+  const openChat = async (
+    chat: Conversation,
+    pushUrl = true
+  ) => {
     setSelectedChat(chat);
+
     setShowSidebar(false);
+
+    pageRef.current = 1;
+
+    hasMoreRef.current = true;
 
     if (pushUrl) {
       router.push(`/chatnew?c=${chat._id}`);
     }
 
     try {
-      const res = await API.get(`/chat/messages/${chat._id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await API.get(
+        `/chat/messages/${chat._id}?page=1`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
-      setMessages(res.data.messages);
+      setMessages(res.data.messages || []);
+
+      scrollToBottom();
     } catch (err) {
       console.error(err);
     }
   };
 
+  // =========================================
+  // LOAD MORE
+  // =========================================
+
+  const loadMoreMessages = async () => {
+    if (
+      !selectedChat ||
+      loadingMoreRef.current ||
+      !hasMoreRef.current
+    )
+      return;
+
+    loadingMoreRef.current = true;
+
+    try {
+      const nextPage = pageRef.current + 1;
+
+      const res = await API.get(
+        `/chat/messages/${selectedChat._id}?page=${nextPage}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const oldScrollHeight =
+        messagesContainerRef.current?.scrollHeight || 0;
+
+      if (res.data.messages.length === 0) {
+        hasMoreRef.current = false;
+      } else {
+        setMessages((prev) => [
+          ...res.data.messages,
+          ...prev,
+        ]);
+
+        pageRef.current = nextPage;
+
+        setTimeout(() => {
+          if (messagesContainerRef.current) {
+            messagesContainerRef.current.scrollTop =
+              messagesContainerRef.current.scrollHeight -
+              oldScrollHeight;
+          }
+        }, 50);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      loadingMoreRef.current = false;
+    }
+  };
+
+  // =========================================
+  // SCROLL DETECT
+  // =========================================
+
+  const handleScroll = () => {
+    if (!messagesContainerRef.current) return;
+
+    if (messagesContainerRef.current.scrollTop < 100) {
+      loadMoreMessages();
+    }
+  };
+
+  // =========================================
   // START CHAT
+  // =========================================
+
   const startChat = async (friend: Friend) => {
     try {
       const res = await API.post(
         "/chat/conversations",
-        { receiverId: friend._id },
-        { headers: { Authorization: `Bearer ${token}` } }
+        {
+          receiverId: friend._id,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
 
-      const existing = conversations.find((c) => c._id === res.data._id);
+      const existing = conversations.find(
+        (c) => c._id === res.data._id
+      );
 
-      if (existing) return openChat(existing);
+      if (existing) {
+        return openChat(existing);
+      }
 
       const newChat: Conversation = {
         _id: res.data._id,
         user: friend,
       };
 
-      setConversations((prev) => [newChat, ...prev]);
+      setConversations((prev) => [
+        newChat,
+        ...prev,
+      ]);
+
       openChat(newChat);
     } catch (err) {
       console.error(err);
     }
   };
 
-  // SEND MESSAGE
+  // =========================================
+  // SEND TEXT MESSAGE
+  // =========================================
+
   const sendMessage = async () => {
     if (!input.trim() || !selectedChat) return;
 
@@ -620,169 +899,389 @@ export default function ChatPage() {
         {
           conversationId: selectedChat._id,
           text: input,
+          type: "text",
         },
-        { headers: { Authorization: `Bearer ${token}` } }
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
 
       setInput("");
+
+      socketRef.current?.emit("stop_typing", {
+        sender: currentUserId,
+        receiver: selectedChat.user._id,
+      });
     } catch (err) {
       console.error(err);
     }
   };
 
-  if (loading) return <div className="p-6">Loading...</div>;
+  // =========================================
+  // VOICE RECORDING
+  // =========================================
+
+  const startRecording = async () => {
+    try {
+      const stream =
+        await navigator.mediaDevices.getUserMedia({
+          audio: true,
+        });
+
+      const mediaRecorder = new MediaRecorder(stream);
+
+      mediaRecorderRef.current = mediaRecorder;
+
+      audioChunksRef.current = [];
+
+      mediaRecorder.ondataavailable = (event) => {
+        audioChunksRef.current.push(event.data);
+      };
+
+      mediaRecorder.onstop = async () => {
+        try {
+          setUploadingVoice(true);
+
+          const audioBlob = new Blob(
+            audioChunksRef.current,
+            {
+              type: "audio/webm",
+            }
+          );
+
+          const formData = new FormData();
+
+          formData.append(
+            "conversationId",
+            selectedChat!._id
+          );
+
+          formData.append("type", "voice");
+
+          formData.append(
+            "audio",
+            audioBlob,
+            "voice.webm"
+          );
+
+          await API.post(
+            "/chat/messages",
+            formData,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+        } catch (err) {
+          console.error(err);
+        } finally {
+          setUploadingVoice(false);
+        }
+      };
+
+      mediaRecorder.start();
+
+      setRecording(true);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const stopRecording = () => {
+    mediaRecorderRef.current?.stop();
+
+    setRecording(false);
+  };
+
+  // =========================================
+  // LOADING
+  // =========================================
+
+  if (loading) {
+    return (
+      <div className="h-screen flex items-center justify-center">
+        Loading...
+      </div>
+    );
+  }
 
   return (
     <div className="h-screen flex bg-gray-100 overflow-hidden">
 
       {/* SIDEBAR */}
+
       <div
-        className={`fixed md:static z-20 top-0 left-0 h-full w-full md:w-1/3 lg:w-1/4 bg-white border-r overflow-y-auto transition-transform duration-300
-        ${showSidebar ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}
+        className={`fixed md:static z-20 top-0 left-0 h-full w-full md:w-[340px] bg-white border-r overflow-y-auto transition-transform duration-300
+        ${
+          showSidebar
+            ? "translate-x-0"
+            : "-translate-x-full md:translate-x-0"
+        }`}
       >
-        <h1 className="p-4 font-bold text-lg border-b">Chats</h1>
+
+        <div className="p-4 border-b sticky top-0 bg-white z-10">
+          <h1 className="font-bold text-2xl text-gray-800">
+            Chats
+          </h1>
+        </div>
+
+        {/* CONVERSATIONS */}
 
         {conversations.map((chat) => (
           <div
             key={chat._id}
             onClick={() => openChat(chat)}
-            className={`flex items-center gap-3 p-3 cursor-pointer hover:bg-gray-100 ${
-              selectedChat?._id === chat._id ? "bg-red-100" : ""
+            className={`flex items-center gap-3 p-4 cursor-pointer transition hover:bg-gray-100
+            ${
+              selectedChat?._id === chat._id
+                ? "bg-red-50"
+                : ""
             }`}
           >
-            <div className="relative w-10 h-10 rounded-full bg-gray-300 overflow-hidden">
-              {chat.user.image && (
-                <img
-                  src={`${IMAGE_BASE_URL}${chat.user.image}`}
-                  className="w-full h-full object-cover"
-                />
-              )}
+
+            <div className="relative">
+              <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-300">
+                {chat.user.image && (
+                  <img
+                    src={`${IMAGE_BASE_URL}${chat.user.image}`}
+                    className="w-full h-full object-cover"
+                  />
+                )}
+              </div>
+
               {onlineUsers.includes(chat.user._id) && (
                 <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></span>
               )}
             </div>
 
-            <div className="flex-1">
-              <p className="text-sm font-medium">{chat.user.name}</p>
-              <p className="text-xs text-gray-500 truncate">
+            <div className="flex-1 overflow-hidden">
+              <p className="font-medium text-gray-800 truncate">
+                {chat.user.name}
+              </p>
+
+              <p className="text-sm text-gray-500 truncate">
                 {chat.lastMessage || "Start conversation"}
               </p>
             </div>
           </div>
         ))}
 
-        <div className="p-3 text-xs text-gray-500 border-t">
-          Start new chat
-        </div>
-
-        {friends.map((friend) => (
-          <div
-            key={friend._id}
-            onClick={() => startChat(friend)}
-            className="flex items-center gap-3 p-3 cursor-pointer hover:bg-gray-100"
-          >
-            <div className="w-10 h-10 rounded-full bg-gray-300 overflow-hidden">
-              {friend.image && (
-                <img
-                  src={`${IMAGE_BASE_URL}${friend.image}`}
-                  className="w-full h-full object-cover"
-                />
-              )}
-            </div>
-            <p className="text-sm">{friend.name}</p>
-          </div>
-        ))}
       </div>
 
-      {/* CHAT */}
-      <div className="flex-1 flex flex-col w-full">
+      {/* CHAT AREA */}
+
+      <div className="flex-1 flex flex-col bg-white">
 
         {!selectedChat ? (
-          <div className="flex-1 flex items-center justify-center text-gray-500">
+          <div className="flex-1 flex items-center justify-center text-gray-400">
             Select a chat
           </div>
         ) : (
           <>
             {/* HEADER */}
-            <div className="p-4 border-b bg-white flex items-center gap-3">
-              <button
-                onClick={() => {
-                  setShowSidebar(true);
-                  router.push("/chat");
-                }}
-                className="md:hidden text-lg"
-              >
-                ←
-              </button>
 
-              <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-300">
-                {selectedChat.user.image && (
-                  <img
-                    src={`${IMAGE_BASE_URL}${selectedChat.user.image}`}
-                    className="w-full h-full object-cover"
-                  />
-                )}
+            <div className="h-16 border-b px-4 flex items-center justify-between bg-white">
+
+              <div className="flex items-center gap-3">
+
+                <button
+                  onClick={() => {
+                    setShowSidebar(true);
+                    router.push("/chat");
+                  }}
+                  className="md:hidden"
+                >
+                  <ArrowLeft size={20} />
+                </button>
+
+                <div className="relative">
+                  <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-300">
+                    {selectedChat.user.image && (
+                      <img
+                        src={`${IMAGE_BASE_URL}${selectedChat.user.image}`}
+                        className="w-full h-full object-cover"
+                      />
+                    )}
+                  </div>
+
+                  {onlineUsers.includes(
+                    selectedChat.user._id
+                  ) && (
+                    <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></span>
+                  )}
+                </div>
+
+                <div>
+                  <h2 className="font-semibold text-gray-800">
+                    {selectedChat.user.name}
+                  </h2>
+
+                  <p className="text-xs text-gray-500">
+                    {onlineUsers.includes(
+                      selectedChat.user._id
+                    )
+                      ? "Online"
+                      : "Offline"}
+                  </p>
+                </div>
               </div>
 
-              <h2 className="font-semibold">{selectedChat.user.name}</h2>
+              <div className="flex items-center gap-4 text-gray-600">
+                <Phone size={20} />
+                <Video size={20} />
+              </div>
             </div>
 
             {/* MESSAGES */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-2">
+
+            <div
+              ref={messagesContainerRef}
+              onScroll={handleScroll}
+              className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-100"
+            >
+
               {messages.map((msg, i) => (
                 <div
-                  key={i}
-                  className={`max-w-[75%] md:max-w-xs px-3 py-2 rounded-lg text-sm break-words ${
+                  key={msg._id || i}
+                  className={`flex ${
                     msg.sender === currentUserId
-                      ? "ml-auto bg-red-500 text-white"
-                      : "bg-blue-400 text-gray-900"
+                      ? "justify-end"
+                      : "justify-start"
                   }`}
                 >
-                  {msg.text}
+
+                  <div
+                    className={`max-w-[80%] rounded-2xl px-4 py-2 shadow-sm
+                    ${
+                      msg.sender === currentUserId
+                        ? "bg-red-500 text-white rounded-br-sm"
+                        : "bg-white text-gray-800 rounded-bl-sm"
+                    }`}
+                  >
+
+                    {msg.type === "voice" ? (
+                      <audio controls className="max-w-full">
+                        <source
+                          src={`${AUDIO_BASE_URL}${msg.audio}`}
+                        />
+                      </audio>
+                    ) : (
+                      <p className="text-sm break-words">
+                        {msg.text}
+                      </p>
+                    )}
+
+                    <p
+                      className={`text-[10px] mt-1 text-right
+                      ${
+                        msg.sender === currentUserId
+                          ? "text-red-100"
+                          : "text-gray-400"
+                      }`}
+                    >
+                      {msg.createdAt
+                        ? new Date(
+                            msg.createdAt
+                          ).toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })
+                        : ""}
+                    </p>
+                  </div>
                 </div>
               ))}
+
+              {isTyping && (
+                <div className="text-xs text-gray-500 px-2">
+                  {selectedChat.user.name} is typing...
+                </div>
+              )}
 
               <div ref={messagesEndRef} />
             </div>
 
-            {isTyping && (
-              <div className="text-xs text-gray-500 px-4">
-                {selectedChat.user.name} is typing...
-              </div>
-            )}
-
             {/* INPUT */}
-            <div className="p-3 bg-white border-t flex gap-2 sticky bottom-0">
-              <input
-                value={input}
-                onChange={(e) => {
-                  setInput(e.target.value);
 
-                  socketRef.current?.emit("typing", {
-                    sender: currentUserId,
-                    receiver: selectedChat.user._id,
-                  });
+            <div className="p-3 bg-white border-t">
 
-                  clearTimeout(typingTimeout.current);
+              {recording && (
+                <div className="mb-2 text-sm text-red-500 animate-pulse">
+                  🎤 Recording voice...
+                </div>
+              )}
 
-                  typingTimeout.current = setTimeout(() => {
-                    socketRef.current?.emit("stop_typing", {
+              {uploadingVoice && (
+                <div className="mb-2 text-sm text-blue-500">
+                  Uploading voice...
+                </div>
+              )}
+
+              <div className="flex items-center gap-2">
+
+                <input
+                  value={input}
+                  onChange={(e) => {
+                    setInput(e.target.value);
+
+                    socketRef.current?.emit("typing", {
                       sender: currentUserId,
-                      receiver: selectedChat.user._id,
+                      receiver:
+                        selectedChat.user._id,
                     });
-                  }, 800);
-                }}
-                className="flex-1 border rounded-full px-4 py-2 text-sm"
-                placeholder="Type message..."
-                onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-              />
 
-              <button
-                onClick={sendMessage}
-                className="bg-red-500 text-white px-4 py-2 rounded-full"
-              >
-                Send
-              </button>
+                    clearTimeout(
+                      typingTimeout.current
+                    );
+
+                    typingTimeout.current =
+                      setTimeout(() => {
+                        socketRef.current?.emit(
+                          "stop_typing",
+                          {
+                            sender: currentUserId,
+                            receiver:
+                              selectedChat.user
+                                ._id,
+                          }
+                        );
+                      }, 800);
+                  }}
+                  className="flex-1 border rounded-full px-5 py-3 text-sm outline-none focus:border-red-400"
+                  placeholder="Type a message..."
+                  onKeyDown={(e) =>
+                    e.key === "Enter" &&
+                    sendMessage()
+                  }
+                />
+
+                {!recording ? (
+                  <button
+                    onClick={startRecording}
+                    className="w-11 h-11 rounded-full bg-gray-200 flex items-center justify-center hover:bg-gray-300"
+                  >
+                    <Mic size={20} />
+                  </button>
+                ) : (
+                  <button
+                    onClick={stopRecording}
+                    className="w-11 h-11 rounded-full bg-red-500 text-white flex items-center justify-center"
+                  >
+                    <Square size={18} />
+                  </button>
+                )}
+
+                <button
+                  onClick={sendMessage}
+                  className="w-11 h-11 rounded-full bg-red-500 text-white flex items-center justify-center hover:bg-red-600"
+                >
+                  <Send size={18} />
+                </button>
+
+              </div>
             </div>
           </>
         )}

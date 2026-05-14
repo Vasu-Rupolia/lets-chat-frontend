@@ -462,7 +462,7 @@ export default function ProfilePage() {
               {user.image ? (
                 <img
                   src={`${IMAGE_BASE_URL}${user.image}?t=${Date.now()}`}
-                  alt={user.name}
+                  alt={user.name} 
                   className="w-full h-full object-cover"
                 />
               ) : (

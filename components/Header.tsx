@@ -642,7 +642,7 @@ export default function Header({ onMenuClick }: HeaderProps) {
 
       <h1 className="text-xl font-bold text-gray-900 whitespace-nowrap">
         <Link href="/" className="hover:text-red-600 transition">
-          Let's Chat!
+          Skills Barter
         </Link>
       </h1>
 

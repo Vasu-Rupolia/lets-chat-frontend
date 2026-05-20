@@ -104,13 +104,18 @@ export default function SignupPage() {
         formData.append("image", form.image);
       }
 
-      await API.post("/auth/signup", formData, {
+      const res = await API.post("/auth/signup", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
 
-      router.push("/login");
+      // router.push("/login");
+
+      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("userId", res.data.user._id);
+
+      router.push("/");
     } catch (err: any) {
       console.log("server error", err.response?.data);
       setError(err.response?.data?.message || "Signup failed");

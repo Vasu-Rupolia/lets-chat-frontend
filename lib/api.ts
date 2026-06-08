@@ -18,7 +18,7 @@ import axios from "axios";
 
 const API = axios.create({
   // baseURL: "http://85.121.120.156:5072/api",
-  baseURL: "https://skillbarter.codevocab.com/api"
+  baseURL: "https://api.skillbarter.codevocab.com/api"
 });
 
 // REQUEST INTERCEPTOR

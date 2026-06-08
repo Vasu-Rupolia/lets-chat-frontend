@@ -35,7 +35,7 @@ export default function Header({ onMenuClick }: HeaderProps) {
   // SOCKET INIT + LISTENER
   useEffect(() => {
     const socket = io(
-      process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"
+      process.env.NEXT_PUBLIC_BASE_URL || "https://skillbarter.codevocab.com"
     );
 
     socketRef.current = socket;

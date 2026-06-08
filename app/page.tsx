@@ -582,7 +582,7 @@ export default function HomePage() {
             >
               <div className="relative">
                 <img
-                  src={`https://skillbarter.codevocab.com/uploads/${user.image}`}
+                  src={`https://api.skillbarter.codevocab.com/uploads/${user.image}`}
                   className="w-20 h-20 rounded-full mx-auto object-cover"
                 />
 

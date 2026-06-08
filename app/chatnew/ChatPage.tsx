@@ -593,7 +593,8 @@ export default function ChatPage() {
   useEffect(() => {
     if (!currentUserId) return;
 
-    socketRef.current = io("http://85.121.120.156:5072");
+    // socketRef.current = io("http://85.121.120.156:5072");
+    socketRef.current = io("https://api.skillbarter.codevocab.com");
 
     socketRef.current.emit("join", currentUserId);
 

@@ -538,7 +538,7 @@ export default function ChatPage() {
 
   return (
     // <div className="h-screen flex bg-gray-100 overflow-hidden">
-    <div className="h-[100dvh] flex bg-gray-50 overflow-hidden">
+    <div className="fixed inset-0 flex bg-gray-50 overflow-hidden">
 
       {/* SIDEBAR */}
 

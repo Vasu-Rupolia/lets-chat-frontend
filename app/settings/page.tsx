@@ -116,117 +116,251 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="bg-gray-100 min-h-screen text-gray-900">
+  <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-red-50">
 
-      <div className="max-w-3xl mx-auto p-6">
+    <div className="max-w-6xl mx-auto px-4 py-10">
 
-        <div className="bg-white p-6 rounded-xl shadow-md border border-gray-200">
+      {/* HERO */}
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-red-500 via-pink-500 to-orange-400 p-8 text-white mb-8">
 
-          <h2 className="text-xl font-bold mb-6 text-gray-900">
-            Settings ⚙️
+        <div className="absolute -top-20 -left-20 w-64 h-64 bg-white/10 rounded-full"></div>
+        <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-white/10 rounded-full"></div>
+
+        <div className="relative">
+          <h1 className="text-4xl font-bold">
+            Account Settings
+          </h1>
+
+          <p className="mt-2 text-white/90">
+            Manage your profile information and skills.
+          </p>
+        </div>
+
+      </div>
+
+      <div className="grid lg:grid-cols-3 gap-8">
+
+        {/* PROFILE PREVIEW */}
+        <div className="bg-white rounded-3xl shadow-lg p-6 h-fit">
+
+          <div className="flex flex-col items-center">
+
+            <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-red-100 shadow-lg">
+
+              {form.image ? (
+                <img
+                  src={URL.createObjectURL(form.image)}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full bg-gradient-to-br from-red-500 to-pink-500 flex items-center justify-center text-white text-4xl font-bold">
+                  {form.name?.charAt(0) || "U"}
+                </div>
+              )}
+
+            </div>
+
+            <h2 className="mt-4 text-xl font-bold text-gray-900">
+              {form.name || "Your Name"}
+            </h2>
+
+            <p className="text-gray-500 text-sm">
+              {form.email || "your@email.com"}
+            </p>
+
+          </div>
+
+          <div className="mt-6">
+
+            <h3 className="font-semibold text-gray-800 mb-3">
+              Skills
+            </h3>
+
+            <div className="flex flex-wrap gap-2">
+
+              {form.skills.length > 0 ? (
+                form.skills.map((skill, i) => (
+                  <span
+                    key={i}
+                    className="px-3 py-1 bg-red-100 text-red-700 rounded-full text-xs"
+                  >
+                    {skill}
+                  </span>
+                ))
+              ) : (
+                <p className="text-sm text-gray-400">
+                  No skills added
+                </p>
+              )}
+
+            </div>
+
+          </div>
+
+        </div>
+
+        {/* SETTINGS FORM */}
+        <div className="lg:col-span-2 bg-white rounded-3xl shadow-lg p-8">
+
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">
+            Profile Information
           </h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid md:grid-cols-2 gap-5">
 
-            {/* Name */}
-            <input
-              name="name"
-              value={form.name}
-              onChange={handleChange}
-              placeholder="Name"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg 
-              focus:outline-none focus:ring-2 focus:ring-pink-500 
-              focus:border-pink-500 text-gray-900 bg-white"
-            />
+            <div>
+              <label className="text-sm font-medium text-gray-600">
+                Full Name
+              </label>
 
-            {/* Email */}
-            <input
-              name="email"
-              value={form.email}
-              onChange={handleChange}
-              placeholder="Email"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg 
-              focus:outline-none focus:ring-2 focus:ring-pink-500 
-              focus:border-pink-500 text-gray-900 bg-white"
-            />
+              <input
+                name="name"
+                value={form.name}
+                onChange={handleChange}
+                className="mt-1 w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-red-500 text-gray-900"
+              />
+            </div>
 
-            {/* Mobile */}
-            <input
-              name="mobile_number"
-              value={form.mobile_number}
-              onChange={handleChange}
-              placeholder="Mobile"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg 
-              focus:outline-none focus:ring-2 focus:ring-pink-500 
-              focus:border-pink-500 text-gray-900 bg-white"
-            />
+            <div>
+              <label className="text-sm font-medium text-gray-600">
+                Email
+              </label>
 
-            {/* About */}
+              <input
+                name="email"
+                value={form.email}
+                onChange={handleChange}
+                className="mt-1 w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-red-500 text-gray-900"
+              />
+            </div>
+
+            <div>
+              <label className="text-sm font-medium text-gray-600">
+                Mobile Number
+              </label>
+
+              <input
+                name="mobile_number"
+                value={form.mobile_number}
+                onChange={handleChange}
+                className="mt-1 w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-red-500 text-gray-900"
+              />
+            </div>
+
+            <div>
+              <label className="text-sm font-medium text-gray-600">
+                Profile Photo
+              </label>
+
+              <input
+                type="file"
+                onChange={handleFileChange}
+                className="mt-1 w-full px-4 py-3 border border-dashed border-gray-300 rounded-xl text-gray-700"
+              />
+            </div>
+
+          </div>
+
+          {/* ABOUT */}
+          <div className="mt-5">
+
+            <label className="text-sm font-medium text-gray-600">
+              About Yourself
+            </label>
+
             <textarea
               name="about"
               value={form.about}
               onChange={handleChange}
-              placeholder="About"
-              className="col-span-2 w-full px-4 py-2 border border-gray-300 rounded-lg 
-              focus:outline-none focus:ring-2 focus:ring-pink-500 
-              focus:border-pink-500 text-gray-900 bg-white"
-            />
-
-            {/* Skills */}
-            <div className="col-span-2">
-
-              <div className="flex gap-2">
-                <input
-                  value={skillInput}
-                  onChange={(e) => setSkillInput(e.target.value)}
-                  placeholder="Add skill"
-                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg 
-                  focus:outline-none focus:ring-2 focus:ring-pink-500 
-                  focus:border-pink-500 text-gray-900 bg-white"
-                />
-
-                <button
-                  onClick={addSkill}
-                  className="bg-red-600 hover:bg-red-700 transition text-white px-4 rounded-lg"
-                >
-                  Add
-                </button>
-              </div>
-
-              <div className="flex flex-wrap gap-2 mt-3">
-                {form.skills.map((skill, i) => (
-                  <span
-                    key={i}
-                    className="bg-pink-100 text-red-800 px-3 py-1 rounded-full text-xs flex items-center gap-1"
-                  >
-                    {skill}
-                    <button onClick={() => removeSkill(skill)}>✕</button>
-                  </span>
-                ))}
-              </div>
-
-            </div>
-
-            {/* Image */}
-            <input
-              type="file"
-              onChange={handleFileChange}
-              className="col-span-2 text-gray-700"
+              rows={4}
+              className="mt-1 w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-red-500 text-gray-900"
             />
 
           </div>
 
-          {/* Save Button */}
+          {/* SKILLS */}
+          <div className="mt-5">
+
+            <label className="text-sm font-medium text-gray-600">
+              Skills
+            </label>
+
+            <div className="flex gap-2 mt-2">
+
+              <input
+                value={skillInput}
+                onChange={(e) => setSkillInput(e.target.value)}
+                placeholder="React, Node.js, Laravel..."
+                className="flex-1 px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-red-500 text-gray-900"
+              />
+
+              <button
+                onClick={addSkill}
+                className="px-5 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-xl hover:shadow-lg transition"
+              >
+                Add
+              </button>
+
+            </div>
+
+            <div className="flex flex-wrap gap-2 mt-4">
+
+              {form.skills.map((skill, i) => (
+                <span
+                  key={i}
+                  className="
+                    flex items-center gap-2
+                    bg-red-100
+                    text-red-700
+                    px-3 py-2
+                    rounded-full
+                    text-sm
+                  "
+                >
+                  {skill}
+
+                  <button
+                    onClick={() => removeSkill(skill)}
+                    className="font-bold"
+                  >
+                    ×
+                  </button>
+
+                </span>
+              ))}
+
+            </div>
+
+          </div>
+
+          {/* SAVE BUTTON */}
           <button
             onClick={handleUpdate}
             disabled={loading}
-            className="mt-6 w-full bg-red-600 hover:bg-red-700 transition text-white py-2 rounded-lg"
+            className="
+              w-full
+              mt-8
+              py-4
+              rounded-2xl
+              text-white
+              font-semibold
+              bg-gradient-to-r
+              from-red-500
+              to-pink-500
+              hover:shadow-xl
+              transition-all
+              duration-300
+            "
           >
-            {loading ? "Updating..." : "Save Changes"}
+            {loading ? "Saving Changes..." : "Save Changes"}
           </button>
 
         </div>
+
       </div>
+
     </div>
-  );
+
+  </div>
+);
 }

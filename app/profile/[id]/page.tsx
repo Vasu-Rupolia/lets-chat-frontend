@@ -191,47 +191,211 @@ export default function ProfilePage() {
   };
 
   if (loading) {
-    return <div className="p-6 text-gray-600">Loading profile...</div>;
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2
+          className="animate-spin text-red-500"
+          size={50}
+        />
+      </div>
+    );
   }
 
   if (!user) {
     return <div className="p-6 text-red-500">User not found</div>;
   }
 
-  return (
-    <div className="bg-gray-100 min-h-screen">
-      {/* COVER */}
-      <div className="h-40 bg-gradient-to-r from-red-500 to-pink-600"></div>
+  // return (
+  //   <div className="bg-gray-100 min-h-screen">
+  //     {/* COVER */}
+  //     <div className="h-40 bg-gradient-to-r from-red-500 to-pink-600"></div>
 
-      {/* PROFILE CARD */}
-      <div className="max-w-4xl mx-auto px-6">
-        <div className="bg-white rounded-xl shadow-md p-6 relative -mt-16">
-          {/* AVATAR */}
-          <div className="absolute -top-12 left-6">
-            {/* PROFILE IMAGE */}
-            <div
-              className="w-24 h-24 rounded-full border-4 border-white overflow-hidden bg-gray-200 cursor-pointer"
-              // onClick={() => setShowImageModal(true)}
-            >
+  //     {/* PROFILE CARD */}
+  //     <div className="max-w-4xl mx-auto px-6">
+  //       <div className="bg-white rounded-xl shadow-md p-6 relative -mt-16">
+  //         {/* AVATAR */}
+  //         <div className="absolute -top-12 left-6">
+  //           {/* PROFILE IMAGE */}
+  //           <div
+  //             className="w-24 h-24 rounded-full border-4 border-white overflow-hidden bg-gray-200 cursor-pointer"
+  //             // onClick={() => setShowImageModal(true)}
+  //           >
+  //             {user.image ? (
+  //               <img
+  //                 src={`${IMAGE_BASE_URL}${user.image}?t=${Date.now()}`}
+  //                 alt={user.name} 
+  //                 className="w-full h-full object-cover"
+  //               />
+  //             ) : (
+  //               <div className="flex items-center justify-center w-full h-full text-2xl font-bold text-gray-600">
+  //                 {user.name?.charAt(0)}
+  //               </div>
+  //             )}
+  //           </div>
+
+  //           {/* CAMERA BUTTON */}
+  //           <label className="absolute bottom-0 right-0 bg-white border border-gray-300 text-gray-700 p-2 rounded-full cursor-pointer shadow-lg hover:bg-gray-100 transition">
+  //             {uploading ? (
+  //               <Loader2 className="animate-spin" size={16} />
+  //             ) : (
+  //               <Camera size={16} />
+  //             )}
+
+  //             <input
+  //               type="file"
+  //               className="hidden"
+  //               onChange={handleImageSelect}
+  //             />
+  //           </label>
+  //         </div>
+
+  //         {/* USER INFO */}
+  //         <div className="ml-32">
+  //           <h2 className="text-2xl font-bold text-gray-900">
+  //             {user.name}
+  //           </h2>
+
+  //           <p className="text-gray-600 mt-1">{user.email}</p>
+
+  //           {user.dob && (
+  //             <p className="text-gray-700 mt-1 text-sm">
+  //               Age: {calculateAge(user.dob)} years
+  //             </p>
+  //           )}
+  //         </div>
+  //       </div>
+
+  //       {/* EXTRA SECTION */}
+  //       <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+  //         <div className="bg-white p-5 rounded-xl shadow md:col-span-2">
+  //           <h3 className="font-semibold text-gray-800 mb-3 text-lg">
+  //             About
+  //           </h3>
+
+  //           <p className="text-sm text-gray-600 leading-relaxed">
+  //             {user.about || "No bio available."}
+  //           </p>
+  //         </div>
+
+  //         <div className="bg-white p-5 rounded-xl shadow">
+  //           <h3 className="font-semibold text-gray-800 mb-3 text-lg">
+  //             Skills
+  //           </h3>
+
+  //           {user.skills && user.skills.length > 0 ? (
+  //             <div className="flex flex-wrap gap-2">
+  //               {user.skills.map((skill, index) => (
+  //                 <span
+  //                   key={index}
+  //                   className="bg-red-100 text-red-700 text-xs px-3 py-1 rounded-full"
+  //                 >
+  //                   {skill}
+  //                 </span>
+  //               ))}
+  //             </div>
+  //           ) : (
+  //             <p className="text-sm text-gray-500">No skills listed.</p>
+  //           )}
+  //         </div>
+  //       </div>
+  //     </div>
+
+  //     {/* CROP MODAL */}
+  //     {showImageModal && selectedImage && (
+  //       <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
+  //         <div className="bg-white rounded-xl p-4 w-[90%] max-w-lg">
+  //           <div className="relative w-full h-[400px] bg-black rounded-lg overflow-hidden">
+  //             <Cropper
+  //               image={selectedImage}
+  //               crop={crop}
+  //               zoom={zoom}
+  //               aspect={1}
+  //               cropShape="round"
+  //               showGrid={false}
+  //               onCropChange={setCrop}
+  //               onZoomChange={setZoom}
+  //               onCropComplete={onCropComplete}
+  //             />
+  //           </div>
+
+  //           <input
+  //             type="range"
+  //             min={1}
+  //             max={3}
+  //             step={0.1}
+  //             value={zoom}
+  //             onChange={(e: any) => setZoom(e.target.value)}
+  //             className="w-full mt-4"
+  //           />
+
+  //           <div className="flex justify-end gap-3 mt-4">
+  //             <button
+  //               onClick={() => {
+  //                 setShowImageModal(false);
+  //                 setSelectedImage(null);
+  //               }}
+  //               className="px-4 py-2 rounded bg-gray-200"
+  //             >
+  //               Cancel
+  //             </button>
+
+  //             <button
+  //               onClick={handleUploadCroppedImage}
+  //               className="px-4 py-2 rounded bg-red-500 text-white"
+  //             >
+  //               {uploading ? "Uploading..." : "Save"}
+  //             </button>
+  //           </div>
+  //         </div>
+  //       </div>
+  //     )}
+  //   </div>
+  // );
+
+  return (
+  <div className="min-h-screen bg-gray-100">
+
+    {/* Cover */}
+    <div className="h-72 bg-gradient-to-br from-red-600 via-pink-500 to-orange-400 relative overflow-hidden">
+      <div className="absolute inset-0 bg-black/10" />
+
+      <div className="absolute top-10 left-10 w-72 h-72 bg-white/10 rounded-full blur-3xl" />
+
+      <div className="absolute bottom-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl" />
+    </div>
+
+    <div className="max-w-6xl mx-auto px-4 md:px-8">
+
+      {/* Profile Card */}
+      <div className="bg-white/90 backdrop-blur-md rounded-3xl shadow-2xl p-8 relative -mt-24 border border-white">
+
+        {/* Avatar */}
+        <div className="absolute left-1/2 md:left-8 -translate-x-1/2 md:translate-x-0 -top-20">
+
+          <div className="relative">
+
+            <div className="w-36 h-36 rounded-full border-4 border-white overflow-hidden bg-gray-200 shadow-xl">
+
               {user.image ? (
                 <img
                   src={`${IMAGE_BASE_URL}${user.image}?t=${Date.now()}`}
-                  alt={user.name} 
+                  alt={user.name}
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <div className="flex items-center justify-center w-full h-full text-2xl font-bold text-gray-600">
+                <div className="flex items-center justify-center w-full h-full text-5xl font-bold text-gray-600">
                   {user.name?.charAt(0)}
                 </div>
               )}
+
             </div>
 
-            {/* CAMERA BUTTON */}
-            <label className="absolute bottom-0 right-0 bg-white border border-gray-300 text-gray-700 p-2 rounded-full cursor-pointer shadow-lg hover:bg-gray-100 transition">
+            <label className="absolute bottom-2 right-2 bg-white p-2 rounded-full shadow-lg cursor-pointer hover:bg-gray-100">
+
               {uploading ? (
-                <Loader2 className="animate-spin" size={16} />
+                <Loader2 size={18} className="animate-spin" />
               ) : (
-                <Camera size={16} />
+                <Camera size={18} />
               )}
 
               <input
@@ -240,61 +404,142 @@ export default function ProfilePage() {
                 onChange={handleImageSelect}
               />
             </label>
+
           </div>
 
-          {/* USER INFO */}
-          <div className="ml-32">
-            <h2 className="text-2xl font-bold text-gray-900">
-              {user.name}
-            </h2>
+        </div>
 
-            <p className="text-gray-600 mt-1">{user.email}</p>
+        {/* Info */}
+        <div className="mt-20 md:mt-0 md:ml-48">
+
+          <h1 className="text-4xl font-bold text-gray-900">
+            {user.name}
+          </h1>
+
+          <p className="text-gray-500 mt-2">
+            {user.email}
+          </p>
+
+          <div className="flex flex-wrap gap-3 mt-4">
 
             {user.dob && (
-              <p className="text-gray-700 mt-1 text-sm">
-                Age: {calculateAge(user.dob)} years
-              </p>
+              <span className="bg-red-50 text-red-600 px-4 py-2 rounded-full text-sm font-medium">
+                {calculateAge(user.dob)} Years
+              </span>
             )}
+
+            <span className="bg-green-50 text-green-600 px-4 py-2 rounded-full text-sm font-medium">
+              Active Member
+            </span>
+
           </div>
+
         </div>
 
-        {/* EXTRA SECTION */}
-        <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-white p-5 rounded-xl shadow md:col-span-2">
-            <h3 className="font-semibold text-gray-800 mb-3 text-lg">
-              About
-            </h3>
-
-            <p className="text-sm text-gray-600 leading-relaxed">
-              {user.about || "No bio available."}
-            </p>
-          </div>
-
-          <div className="bg-white p-5 rounded-xl shadow">
-            <h3 className="font-semibold text-gray-800 mb-3 text-lg">
-              Skills
-            </h3>
-
-            {user.skills && user.skills.length > 0 ? (
-              <div className="flex flex-wrap gap-2">
-                {user.skills.map((skill, index) => (
-                  <span
-                    key={index}
-                    className="bg-red-100 text-red-700 text-xs px-3 py-1 rounded-full"
-                  >
-                    {skill}
-                  </span>
-                ))}
-              </div>
-            ) : (
-              <p className="text-sm text-gray-500">No skills listed.</p>
-            )}
-          </div>
-        </div>
       </div>
 
-      {/* CROP MODAL */}
-      {showImageModal && selectedImage && (
+      {/* Stats */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
+
+        <div className="bg-white rounded-2xl shadow p-5 text-center">
+          <h3 className="text-3xl font-bold text-red-500">
+            {user.skills?.length || 0}
+          </h3>
+          <p className="text-gray-500 text-sm">
+            Skills
+          </p>
+        </div>
+
+        <div className="bg-white rounded-2xl shadow p-5 text-center">
+          <h3 className="text-3xl font-bold text-pink-500">
+            12
+          </h3>
+          <p className="text-gray-500 text-sm">
+            Connections
+          </p>
+        </div>
+
+        <div className="bg-white rounded-2xl shadow p-5 text-center">
+          <h3 className="text-3xl font-bold text-orange-500">
+            8
+          </h3>
+          <p className="text-gray-500 text-sm">
+            Exchanges
+          </p>
+        </div>
+
+        <div className="bg-white rounded-2xl shadow p-5 text-center">
+          <h3 className="text-3xl font-bold text-green-500">
+            ★ 4.8
+          </h3>
+          <p className="text-gray-500 text-sm">
+            Rating
+          </p>
+        </div>
+
+      </div>
+
+      {/* Content */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
+
+        {/* About */}
+        <div className="lg:col-span-2 bg-white rounded-3xl shadow-xl p-8">
+
+          <h3 className="text-2xl font-bold text-gray-900 mb-4">
+            About
+          </h3>
+
+          <p className="text-gray-600 leading-8">
+            {user.about || "No bio available."}
+          </p>
+
+        </div>
+
+        {/* Skills */}
+        <div className="bg-white rounded-3xl shadow-xl p-8">
+
+          <h3 className="text-2xl font-bold text-gray-900 mb-4">
+            Skills
+          </h3>
+
+          {user.skills && user.skills.length > 0 ? (
+            <div className="flex flex-wrap gap-3">
+
+              {user.skills.map((skill, index) => (
+                <span
+                  key={index}
+                  className="
+                    bg-gradient-to-r
+                    from-red-500
+                    to-pink-500
+                    text-white
+                    px-4
+                    py-2
+                    rounded-full
+                    text-sm
+                    font-medium
+                    shadow
+                  "
+                >
+                  {skill}
+                </span>
+              ))}
+
+            </div>
+          ) : (
+            <p className="text-gray-500">
+              No skills listed.
+            </p>
+          )}
+
+        </div>
+
+      </div>
+
+    </div>
+
+    {/* Crop Modal */}
+    {showImageModal && selectedImage && (
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl p-4 w-[90%] max-w-lg">
             <div className="relative w-full h-[400px] bg-black rounded-lg overflow-hidden">
@@ -342,6 +587,8 @@ export default function ProfilePage() {
           </div>
         </div>
       )}
-    </div>
-  );
+    
+
+  </div>
+);
 }

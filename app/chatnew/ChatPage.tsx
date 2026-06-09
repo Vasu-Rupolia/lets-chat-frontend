@@ -543,95 +543,101 @@ export default function ChatPage() {
       {/* SIDEBAR */}
 
       <div
-        className={`
-          fixed md:static
-          flex flex-col
-          z-20
-          top-0 left-0
-          h-full
-          w-full md:w-[340px]
-          bg-white border-r border-gray-100
-          transition-transform duration-300
-        ${
-          showSidebar
-            ? "translate-x-0"
-            : "-translate-x-full md:translate-x-0"
+  className={`
+    fixed md:static
+    flex flex-col
+    z-20
+    top-0 left-0
+    h-full
+    w-full md:w-[340px]
+    bg-white border-r border-gray-100
+    transition-transform duration-300
+    ${
+      showSidebar
+        ? "translate-x-0"
+        : "-translate-x-full md:translate-x-0"
+    }
+  `}
+>
+
+  {/* Header */}
+  <div className="p-4 border-b border-gray-100 shrink-0">
+    <h1 className="font-bold text-2xl text-gray-800">
+      Chats
+    </h1>
+  </div>
+
+  {/* SCROLLABLE CONTENT */}
+  <div className="flex-1 overflow-y-auto min-h-0">
+
+    {/* Conversations */}
+    {conversations.map((chat) => (
+      <div
+        key={chat._id}
+        onClick={() => openChat(chat)}
+        className={`flex items-center gap-3 p-4 cursor-pointer transition hover:bg-gray-50 ${
+          selectedChat?._id === chat._id
+            ? "bg-red-50"
+            : ""
         }`}
       >
+        <div className="relative">
+          <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-300">
+            {chat.user.image && (
+              <img
+                src={`${IMAGE_BASE_URL}${chat.user.image}`}
+                className="w-full h-full object-cover"
+              />
+            )}
+          </div>
 
-        <div className="p-4 border-b border-gray-100 sticky top-0 bg-white z-10">
-          <h1 className="font-bold text-2xl text-gray-800">
-            Chats
-          </h1>
+          {onlineUsers.includes(chat.user._id) && (
+            <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></span>
+          )}
         </div>
 
-        {/* CONVERSATIONS */}
+        <div className="flex-1 overflow-hidden">
+          <p className="font-medium text-gray-800 truncate">
+            {chat.user.name}
+          </p>
 
-        {conversations.map((chat) => (
-          <div
-            key={chat._id}
-            onClick={() => openChat(chat)}
-            className={`flex items-center gap-3 p-4 cursor-pointer transition hover:bg-gray-50
-            ${
-              selectedChat?._id === chat._id
-                ? "bg-red-50"
-                : ""
-            }`}
-          >
+          <p className="text-sm text-gray-500 truncate">
+            {chat.lastMessage || "Start conversation"}
+          </p>
+        </div>
+      </div>
+    ))}
 
-            <div className="relative">
-              <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-300">
-                {chat.user.image && (
-                  <img
-                    src={`${IMAGE_BASE_URL}${chat.user.image}`}
-                    className="w-full h-full object-cover"
-                  />
-                )}
-              </div>
+    {/* Friends */}
+    <div className="p-3 border-t border-gray-100">
+      <h3 className="text-sm font-semibold text-gray-500 mb-2">
+        Friends
+      </h3>
 
-              {onlineUsers.includes(chat.user._id) && (
-                <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></span>
-              )}
-            </div>
-
-            <div className="flex-1 overflow-hidden">
-              <p className="font-medium text-gray-800 truncate">
-                {chat.user.name}
-              </p>
-
-              <p className="text-sm text-gray-500 truncate">
-                {chat.lastMessage || "Start conversation"}
-              </p>
-            </div>
+      {friends.map((friend) => (
+        <div
+          key={friend._id}
+          onClick={() => startChat(friend)}
+          className="flex items-center gap-3 p-3 cursor-pointer hover:bg-gray-50 rounded-lg"
+        >
+          <div className="w-10 h-10 rounded-full bg-gray-300 overflow-hidden">
+            {friend.image && (
+              <img
+                src={`${IMAGE_BASE_URL}${friend.image}`}
+                className="w-full h-full object-cover"
+              />
+            )}
           </div>
-        ))}
 
-        <div className="p-3 border-t">
-  <h3 className="text-sm font-semibold text-gray-500 mb-2">
-    Friends
-  </h3>
-
-  {friends.map((friend) => (
-    <div
-      key={friend._id}
-      onClick={() => startChat(friend)}
-      className="flex items-center gap-3 p-3 cursor-pointer hover:bg-gray-50 rounded-lg"
-    >
-      <div className="w-10 h-10 rounded-full bg-gray-300 overflow-hidden">
-        {friend.image && (
-          <img
-            src={`${IMAGE_BASE_URL}${friend.image}`}
-            className="w-full h-full object-cover"
-          />
-        )}
-      </div>
-
-      <span>{friend.name}</span>
+          <span className="truncate text-gray-800">
+            {friend.name}
+          </span>
+        </div>
+      ))}
     </div>
-  ))}
-</div>
 
-      </div>
+  </div>
+</div>
 
       {/* CHAT AREA */}
 

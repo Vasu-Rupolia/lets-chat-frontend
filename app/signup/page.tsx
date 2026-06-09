@@ -146,75 +146,116 @@ export default function SignupPage() {
   };
   
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-red-200 to-red-900 px-4">
+  <div className="min-h-screen flex flex-col lg:flex-row bg-gradient-to-br from-red-50 via-white to-red-100">
 
-      <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-3xl">
+    {/* Left Section */}
+    <div className="flex-1 flex flex-col justify-center px-8 lg:px-20 py-12">
+      <div className="max-w-xl">
+        <h1 className="text-5xl font-extrabold text-gray-900 leading-tight">
+          Join
+          <span className="block text-red-600">
+            Skill Barter
+          </span>
+        </h1>
 
-        <h2 className="text-2xl text-gray-800 font-bold text-center mb-6">
-          Create Account
-        </h2>
+        <p className="mt-6 text-lg text-gray-600">
+          Exchange skills, connect with talented people,
+          build meaningful collaborations and learn something new every day.
+        </p>
+
+        <div className="mt-10 grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+            <div className="text-2xl font-bold text-red-500">100+</div>
+            <div className="text-sm text-gray-600">Active Members</div>
+          </div>
+
+          <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+            <div className="text-2xl font-bold text-red-500">50+</div>
+            <div className="text-sm text-gray-600">Skills Available</div>
+          </div>
+
+          <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+            <div className="text-2xl font-bold text-red-500">24/7</div>
+            <div className="text-sm text-gray-600">Networking</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {/* Right Section */}
+    <div className="flex-1 flex items-center justify-center p-6">
+
+      <div className="w-full max-w-3xl bg-white/80 backdrop-blur-md rounded-3xl shadow-xl border border-white p-8">
+
+        <div className="text-center mb-8">
+          <h2 className="text-3xl font-bold text-gray-900">
+            Create Account
+          </h2>
+
+          <p className="text-gray-500 mt-2">
+            Join the Skill Barter community
+          </p>
+        </div>
 
         {error && (
-          <p className="text-red-500 text-sm mb-4 text-center">{error}</p>
+          <div className="mb-5 rounded-xl bg-red-50 border border-red-200 px-4 py-3">
+            <p className="text-red-600 text-sm text-center">
+              {error}
+            </p>
+          </div>
         )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-          {/* Name */}
           <input
             type="text"
             name="name"
             placeholder="Full Name"
             value={form.name}
             onChange={handleChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-800 focus:ring-2 focus:ring-pink-500"
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl text-gray-800 focus:outline-none focus:ring-2 focus:ring-red-500"
           />
 
-          {/* Email */}
           <input
             type="email"
             name="email"
-            placeholder="Email"
+            placeholder="Email Address"
             value={form.email}
             onChange={handleChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-800 focus:ring-2 focus:ring-pink-500"
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl text-gray-800 focus:outline-none focus:ring-2 focus:ring-red-500"
           />
 
-          {/* Password */}
           <input
             type="password"
             name="password"
             placeholder="Password"
             value={form.password}
             onChange={handleChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-800 focus:ring-2 focus:ring-pink-500"
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl text-gray-800 focus:outline-none focus:ring-2 focus:ring-red-500"
           />
 
-          {/* Mobile */}
           <input
             type="text"
             name="mobile_number"
             placeholder="Mobile Number"
             value={form.mobile_number}
             onChange={handleChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-800 focus:ring-2 focus:ring-pink-500"
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl text-gray-800 focus:outline-none focus:ring-2 focus:ring-red-500"
           />
 
-          {/* DOB */}
           <input
             type="date"
             name="dob"
             value={form.dob}
             onChange={handleChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-800"
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl text-gray-800"
           />
 
-          {/* Gender */}
           <select
             name="gender"
             value={form.gender}
             onChange={handleChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-800"
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl text-gray-800"
           >
             <option value="">Select Gender</option>
             <option value="male">Male</option>
@@ -222,91 +263,107 @@ export default function SignupPage() {
             <option value="other">Other</option>
           </select>
 
-          {/* About (Full Width) */}
           <textarea
             name="about"
+            rows={4}
             placeholder="Tell something about yourself..."
             value={form.about}
             onChange={(e) =>
               setForm({ ...form, about: e.target.value })
             }
-            className="col-span-1 md:col-span-2 w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-800 focus:ring-2 focus:ring-pink-500"
+            className="col-span-1 md:col-span-2 w-full px-4 py-3 border border-gray-300 rounded-xl text-gray-800 focus:outline-none focus:ring-2 focus:ring-red-500"
           />
 
           {/* Skills */}
           <div className="col-span-1 md:col-span-2">
-            <label className="text-sm font-medium text-gray-700">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
               Skills
             </label>
 
-            <div className="flex gap-2 mt-1">
+            <div className="flex gap-2">
               <input
                 type="text"
-                placeholder="Enter skill (e.g. React)"
+                placeholder="React, Node.js, Laravel..."
                 value={skillInput}
                 onChange={(e) => setSkillInput(e.target.value)}
-                className="flex-1 px-4 py-2 border border-gray-300 text-gray-800 rounded-lg"
+                className="flex-1 px-4 py-3 border border-gray-300 rounded-xl text-gray-800"
               />
 
               <button
                 type="button"
                 onClick={addSkill}
-                className="bg-red-500 text-white px-4 rounded-lg hover:bg-pink-600 hover:cursor-pointer"
+                className="bg-red-600 text-white px-5 rounded-xl hover:bg-red-700 transition cursor-pointer"
               >
                 Add
               </button>
             </div>
 
-            <div className="flex flex-wrap gap-2 mt-3">
+            <div className="flex flex-wrap gap-2 mt-4">
               {form.skills.map((skill, index) => (
-                <span
+                <div
                   key={index}
-                  className="bg-red-100 text-red-700 text-xs px-3 py-1 rounded-full flex items-center gap-1"
+                  className="bg-red-50 border border-red-200 text-red-600 px-3 py-1.5 rounded-full text-sm flex items-center gap-2"
                 >
                   {skill}
+
                   <button
+                    type="button"
                     onClick={() => removeSkill(skill)}
-                    className="text-red-500 hover:text-red-500"
+                    className="hover:text-red-800"
                   >
                     ✕
                   </button>
-                </span>
+                </div>
               ))}
             </div>
           </div>
 
           {/* Image Upload */}
-          <input
-            type="file"
-            accept="image/*"
-            name="image"
-            onChange={handleFileChange}
-            className="col-span-1 md:col-span-2 w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-800"
-          />
+          <div className="col-span-1 md:col-span-2">
+
+            <input
+              type="file"
+              accept="image/*"
+              name="image"
+              onChange={handleFileChange}
+              className="w-full px-4 py-3 border border-gray-300 rounded-xl text-gray-800"
+            />
+
+            {form.image && (
+              <div className="mt-4 flex justify-center">
+                <img
+                  src={URL.createObjectURL(form.image)}
+                  alt="preview"
+                  className="w-28 h-28 rounded-full object-cover border-4 border-red-100"
+                />
+              </div>
+            )}
+          </div>
 
         </div>
 
-        {/* Button */}
         <button
           onClick={handleSignup}
           disabled={loading}
-          className="w-full mt-6 bg-red-500 text-white py-2 rounded-lg hover:bg-pink-600 hover:cursor-pointer transition disabled:opacity-50"
+          className="w-full mt-8 bg-red-600 text-white py-3 rounded-xl font-semibold hover:bg-red-700 transition cursor-pointer disabled:opacity-50"
         >
-          {loading ? "Creating..." : "Sign Up"}
+          {loading ? "Creating Account..." : "Create Account"}
         </button>
 
-        {/* Footer */}
-        <p className="text-sm text-center mt-4 text-gray-800">
-          Already have an account?{" "}
+        <p className="text-center text-sm text-gray-500 mt-6">
+          Already have an account?
+
           <span
-            className="text-red-500 cursor-pointer hover:underline"
             onClick={() => router.push("/login")}
+            className="ml-1 text-red-600 font-medium cursor-pointer hover:underline"
           >
-            Login
+            Sign In
           </span>
         </p>
 
       </div>
+
     </div>
-  );
+  </div>
+);
 }

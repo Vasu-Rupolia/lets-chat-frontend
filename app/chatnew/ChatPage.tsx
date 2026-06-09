@@ -536,326 +536,475 @@ export default function ChatPage() {
     );
   }
 
-  return (
-    // <div className="h-screen flex bg-gray-100 overflow-hidden">
-    <div className="fixed inset-0 flex bg-gray-50 overflow-hidden">
+//   return (
+//     // <div className="h-screen flex bg-gray-100 overflow-hidden">
+//     <div className="fixed inset-0 flex bg-gray-50 overflow-hidden">
 
-      {/* SIDEBAR */}
+//       {/* SIDEBAR */}
 
-      <div
-  className={`
-    fixed md:static
-    flex flex-col
-    z-20
-    top-0 left-0
-    h-full
-    w-full md:w-[340px]
-    bg-white border-r border-gray-100
-    transition-transform duration-300
-    ${
-      showSidebar
-        ? "translate-x-0"
-        : "-translate-x-full md:translate-x-0"
-    }
-  `}
->
+//       <div
+//   className={`
+//     fixed md:static
+//     flex flex-col
+//     z-20
+//     top-0 left-0
+//     h-full
+//     w-full md:w-[340px]
+//     bg-white border-r border-gray-100
+//     transition-transform duration-300
+//     ${
+//       showSidebar
+//         ? "translate-x-0"
+//         : "-translate-x-full md:translate-x-0"
+//     }
+//   `}
+// >
 
-  {/* Header */}
-  <div className="p-4 border-b border-gray-100 shrink-0">
-    <h1 className="font-bold text-2xl text-gray-800">
-      Chats
-    </h1>
-  </div>
+//   {/* Header */}
+//   <div className="p-4 border-b border-gray-100 shrink-0">
+//     <h1 className="font-bold text-2xl text-gray-800">
+//       Chats
+//     </h1>
+//   </div>
 
-  {/* SCROLLABLE CONTENT */}
-  <div className="flex-1 overflow-y-auto min-h-0">
+//   {/* SCROLLABLE CONTENT */}
+//   <div className="flex-1 overflow-y-auto min-h-0">
 
-    {/* Conversations */}
-    {conversations.map((chat) => (
-      <div
-        key={chat._id}
-        onClick={() => openChat(chat)}
-        className={`flex items-center gap-3 p-4 cursor-pointer transition hover:bg-gray-50 ${
-          selectedChat?._id === chat._id
-            ? "bg-red-50"
-            : ""
-        }`}
-      >
-        <div className="relative">
-          <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-300">
-            {chat.user.image && (
-              <img
-                src={`${IMAGE_BASE_URL}${chat.user.image}`}
-                className="w-full h-full object-cover"
-              />
-            )}
-          </div>
+//     {/* Conversations */}
+//     {conversations.map((chat) => (
+//       <div
+//         key={chat._id}
+//         onClick={() => openChat(chat)}
+//         className={`flex items-center gap-3 p-4 cursor-pointer transition hover:bg-gray-50 ${
+//           selectedChat?._id === chat._id
+//             ? "bg-red-50"
+//             : ""
+//         }`}
+//       >
+//         <div className="relative">
+//           <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-300">
+//             {chat.user.image && (
+//               <img
+//                 src={`${IMAGE_BASE_URL}${chat.user.image}`}
+//                 className="w-full h-full object-cover"
+//               />
+//             )}
+//           </div>
 
-          {onlineUsers.includes(chat.user._id) && (
-            <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></span>
-          )}
-        </div>
+//           {onlineUsers.includes(chat.user._id) && (
+//             <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></span>
+//           )}
+//         </div>
 
-        <div className="flex-1 overflow-hidden">
-          <p className="font-medium text-gray-800 truncate">
-            {chat.user.name}
-          </p>
+//         <div className="flex-1 overflow-hidden">
+//           <p className="font-medium text-gray-800 truncate">
+//             {chat.user.name}
+//           </p>
 
-          <p className="text-sm text-gray-500 truncate">
-            {chat.lastMessage || "Start conversation"}
-          </p>
-        </div>
+//           <p className="text-sm text-gray-500 truncate">
+//             {chat.lastMessage || "Start conversation"}
+//           </p>
+//         </div>
+//       </div>
+//     ))}
+
+//     {/* Friends */}
+//     <div className="p-3 border-t border-gray-100">
+//       <h3 className="text-sm font-semibold text-gray-500 mb-2">
+//         Friends
+//       </h3>
+
+//       {friends.map((friend) => (
+//         <div
+//           key={friend._id}
+//           onClick={() => startChat(friend)}
+//           className="flex items-center gap-3 p-3 cursor-pointer hover:bg-gray-50 rounded-lg"
+//         >
+//           <div className="w-10 h-10 rounded-full bg-gray-300 overflow-hidden">
+//             {friend.image && (
+//               <img
+//                 src={`${IMAGE_BASE_URL}${friend.image}`}
+//                 className="w-full h-full object-cover"
+//               />
+//             )}
+//           </div>
+
+//           <span className="truncate text-gray-800">
+//             {friend.name}
+//           </span>
+//         </div>
+//       ))}
+//     </div>
+
+//   </div>
+// </div>
+
+//       {/* CHAT AREA */}
+
+//       {/* <div className="flex-1 flex flex-col bg-white"> */}
+//       <div className="flex-1 flex flex-col bg-white min-h-0 overflow-hidden">
+
+//         {!selectedChat ? (
+//           <div className="flex-1 flex items-center justify-center text-gray-400">
+//             Select a chat
+//           </div>
+//         ) : (
+//           <>
+//             {/* HEADER */}
+
+//             {/* <div className="h-16 border-b px-4 flex items-center justify-between bg-white"> */}
+//             <div className="h-16 shrink-0 border-b border-gray-100 px-4 flex items-center justify-between bg-white">
+
+//               <div className="flex items-center gap-3">
+
+//                 <button
+//                   onClick={() => {
+//                     setShowSidebar(true);
+//                     router.push("/chat");
+//                   }}
+//                   className="md:hidden"
+//                 >
+//                   <ArrowLeft size={20} />
+//                 </button>
+
+//                 <div className="relative">
+//                   <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-300">
+//                     {selectedChat.user.image && (
+//                       <img
+//                         src={`${IMAGE_BASE_URL}${selectedChat.user.image}`}
+//                         className="w-full h-full object-cover"
+//                       />
+//                     )}
+//                   </div>
+
+//                   {onlineUsers.includes(
+//                     selectedChat.user._id
+//                   ) && (
+//                     <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></span>
+//                   )}
+//                 </div>
+
+//                 <div>
+//                   <h2 className="font-semibold text-gray-800">
+//                     {selectedChat.user.name}
+//                   </h2>
+
+//                   <p className="text-xs text-gray-500">
+//                     {onlineUsers.includes(
+//                       selectedChat.user._id
+//                     )
+//                       ? "Online"
+//                       : "Offline"}
+//                   </p>
+//                 </div>
+//               </div>
+
+//               <div className="flex items-center gap-4 text-gray-600">
+//                 <Phone size={20} />
+//                 <Video size={20} />
+//               </div>
+//             </div>
+
+//             {/* MESSAGES */}
+
+//             <div
+//               ref={messagesContainerRef}
+//               onScroll={handleScroll}
+//               className="flex-1 min-h-0 overflow-y-auto p-4 space-y-3 bg-gray-50"
+//             >
+
+//               {messages.map((msg, i) => (
+//                 <div
+//                   key={msg._id || i}
+//                   className={`flex ${
+//                     msg.sender === currentUserId
+//                       ? "justify-end"
+//                       : "justify-start"
+//                   }`}
+//                 >
+
+//                   <div
+//                     className={`max-w-[80%] rounded-2xl px-4 py-2 shadow-sm
+//                     ${
+//                       msg.sender === currentUserId
+//                       ? "bg-red-500 text-white rounded-br-sm"
+//                       : "bg-white border border-gray-100 text-gray-800 rounded-bl-sm"
+//                     }`}
+//                   >
+
+//                     {msg.type === "voice" ? (
+//                       <audio controls className="max-w-full">
+//                         <source
+//                           src={`${AUDIO_BASE_URL}${msg.audio}`}
+//                         />
+//                       </audio>
+//                     ) : (
+//                       <p className="text-sm break-words">
+//                         {msg.text}
+//                       </p>
+//                     )}
+
+//                     <p
+//                       className={`text-[10px] mt-1 text-right
+//                       ${
+//                         msg.sender === currentUserId
+//                           ? "text-red-100"
+//                           : "text-gray-400"
+//                       }`}
+//                     >
+//                       {msg.createdAt
+//                         ? new Date(
+//                             msg.createdAt
+//                           ).toLocaleTimeString([], {
+//                             hour: "2-digit",
+//                             minute: "2-digit",
+//                           })
+//                         : ""}
+//                     </p>
+//                   </div>
+//                 </div>
+//               ))}
+
+//               {isTyping && (
+//                 <div className="text-xs text-gray-500 px-2">
+//                   {selectedChat.user.name} is typing...
+//                 </div>
+//               )}
+
+//               <div ref={messagesEndRef} />
+//             </div>
+
+//             {/* INPUT */}
+
+//             <div className="shrink-0 p-3 bg-white border-t border-gray-100">
+
+//               {recording && (
+//                 <div className="mb-2 text-sm text-red-500 animate-pulse">
+//                   🎤 Recording voice...
+//                 </div>
+//               )}
+
+//               {uploadingVoice && (
+//                 <div className="mb-2 text-sm text-blue-500">
+//                   Uploading voice...
+//                 </div>
+//               )}
+
+//               <div className="flex items-center gap-2">
+
+//                 <input
+//                   value={input}
+//                   onChange={(e) => {
+//                     setInput(e.target.value);
+
+//                     socketRef.current?.emit("typing", {
+//                       sender: currentUserId,
+//                       receiver:
+//                         selectedChat.user._id,
+//                     });
+
+//                     clearTimeout(
+//                       typingTimeout.current
+//                     );
+
+//                     typingTimeout.current =
+//                       setTimeout(() => {
+//                         socketRef.current?.emit(
+//                           "stop_typing",
+//                           {
+//                             sender: currentUserId,
+//                             receiver:
+//                               selectedChat.user
+//                                 ._id,
+//                           }
+//                         );
+//                       }, 800);
+//                   }}
+//                   className="flex-1 border rounded-full px-5 py-3 text-sm outline-none focus:border-red-400"
+//                   placeholder="Type a message..."
+//                   onKeyDown={(e) =>
+//                     e.key === "Enter" &&
+//                     sendMessage()
+//                   }
+//                 />
+
+//                 {!recording ? (
+//                   <button
+//                     onClick={startRecording}
+//                     className="w-11 h-11 rounded-full bg-gray-200 flex items-center justify-center hover:bg-gray-300"
+//                   >
+//                     <Mic size={20} />
+//                   </button>
+//                 ) : (
+//                   <button
+//                     onClick={stopRecording}
+//                     className="w-11 h-11 rounded-full bg-red-500 text-white flex items-center justify-center"
+//                   >
+//                     <Square size={18} />
+//                   </button>
+//                 )}
+
+//                 <button
+//                   onClick={sendMessage}
+//                   className="w-11 h-11 rounded-full bg-red-500 text-white flex items-center justify-center hover:bg-red-600"
+//                 >
+//                   <Send size={18} />
+//                 </button>
+
+//               </div>
+//             </div>
+//           </>
+//         )}
+//       </div>
+//     </div>
+//   );
+
+return (
+  <div className="h-screen flex bg-gray-50 overflow-hidden">
+
+    {/* SIDEBAR */}
+    <div
+      className={`
+        fixed md:static
+        flex flex-col
+        z-10
+        top-0 left-0
+        h-full
+        w-full md:w-[340px]
+        bg-white border-r border-gray-100
+        transition-transform duration-300
+        ${showSidebar ? "translate-x-0" : "-translate-x-full md:translate-x-0"}
+      `}
+    >
+      <div className="p-4 border-b shrink-0">
+        <h1 className="font-bold text-2xl">Chats</h1>
       </div>
-    ))}
 
-    {/* Friends */}
-    <div className="p-3 border-t border-gray-100">
-      <h3 className="text-sm font-semibold text-gray-500 mb-2">
-        Friends
-      </h3>
-
-      {friends.map((friend) => (
-        <div
-          key={friend._id}
-          onClick={() => startChat(friend)}
-          className="flex items-center gap-3 p-3 cursor-pointer hover:bg-gray-50 rounded-lg"
-        >
-          <div className="w-10 h-10 rounded-full bg-gray-300 overflow-hidden">
-            {friend.image && (
-              <img
-                src={`${IMAGE_BASE_URL}${friend.image}`}
-                className="w-full h-full object-cover"
-              />
-            )}
-          </div>
-
-          <span className="truncate text-gray-800">
-            {friend.name}
-          </span>
-        </div>
-      ))}
-    </div>
-
-  </div>
-</div>
-
-      {/* CHAT AREA */}
-
-      {/* <div className="flex-1 flex flex-col bg-white"> */}
-      <div className="flex-1 flex flex-col bg-white min-h-0 overflow-hidden">
-
-        {!selectedChat ? (
-          <div className="flex-1 flex items-center justify-center text-gray-400">
-            Select a chat
-          </div>
-        ) : (
-          <>
-            {/* HEADER */}
-
-            {/* <div className="h-16 border-b px-4 flex items-center justify-between bg-white"> */}
-            <div className="h-16 shrink-0 border-b border-gray-100 px-4 flex items-center justify-between bg-white">
-
-              <div className="flex items-center gap-3">
-
-                <button
-                  onClick={() => {
-                    setShowSidebar(true);
-                    router.push("/chat");
-                  }}
-                  className="md:hidden"
-                >
-                  <ArrowLeft size={20} />
-                </button>
-
-                <div className="relative">
-                  <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-300">
-                    {selectedChat.user.image && (
-                      <img
-                        src={`${IMAGE_BASE_URL}${selectedChat.user.image}`}
-                        className="w-full h-full object-cover"
-                      />
-                    )}
-                  </div>
-
-                  {onlineUsers.includes(
-                    selectedChat.user._id
-                  ) && (
-                    <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></span>
-                  )}
-                </div>
-
-                <div>
-                  <h2 className="font-semibold text-gray-800">
-                    {selectedChat.user.name}
-                  </h2>
-
-                  <p className="text-xs text-gray-500">
-                    {onlineUsers.includes(
-                      selectedChat.user._id
-                    )
-                      ? "Online"
-                      : "Offline"}
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-4 text-gray-600">
-                <Phone size={20} />
-                <Video size={20} />
-              </div>
-            </div>
-
-            {/* MESSAGES */}
-
-            <div
-              ref={messagesContainerRef}
-              onScroll={handleScroll}
-              className="flex-1 min-h-0 overflow-y-auto p-4 space-y-3 bg-gray-50"
-            >
-
-              {messages.map((msg, i) => (
-                <div
-                  key={msg._id || i}
-                  className={`flex ${
-                    msg.sender === currentUserId
-                      ? "justify-end"
-                      : "justify-start"
-                  }`}
-                >
-
-                  <div
-                    className={`max-w-[80%] rounded-2xl px-4 py-2 shadow-sm
-                    ${
-                      msg.sender === currentUserId
-                      ? "bg-red-500 text-white rounded-br-sm"
-                      : "bg-white border border-gray-100 text-gray-800 rounded-bl-sm"
-                    }`}
-                  >
-
-                    {msg.type === "voice" ? (
-                      <audio controls className="max-w-full">
-                        <source
-                          src={`${AUDIO_BASE_URL}${msg.audio}`}
-                        />
-                      </audio>
-                    ) : (
-                      <p className="text-sm break-words">
-                        {msg.text}
-                      </p>
-                    )}
-
-                    <p
-                      className={`text-[10px] mt-1 text-right
-                      ${
-                        msg.sender === currentUserId
-                          ? "text-red-100"
-                          : "text-gray-400"
-                      }`}
-                    >
-                      {msg.createdAt
-                        ? new Date(
-                            msg.createdAt
-                          ).toLocaleTimeString([], {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })
-                        : ""}
-                    </p>
-                  </div>
-                </div>
-              ))}
-
-              {isTyping && (
-                <div className="text-xs text-gray-500 px-2">
-                  {selectedChat.user.name} is typing...
-                </div>
-              )}
-
-              <div ref={messagesEndRef} />
-            </div>
-
-            {/* INPUT */}
-
-            <div className="shrink-0 p-3 bg-white border-t border-gray-100">
-
-              {recording && (
-                <div className="mb-2 text-sm text-red-500 animate-pulse">
-                  🎤 Recording voice...
-                </div>
-              )}
-
-              {uploadingVoice && (
-                <div className="mb-2 text-sm text-blue-500">
-                  Uploading voice...
-                </div>
-              )}
-
-              <div className="flex items-center gap-2">
-
-                <input
-                  value={input}
-                  onChange={(e) => {
-                    setInput(e.target.value);
-
-                    socketRef.current?.emit("typing", {
-                      sender: currentUserId,
-                      receiver:
-                        selectedChat.user._id,
-                    });
-
-                    clearTimeout(
-                      typingTimeout.current
-                    );
-
-                    typingTimeout.current =
-                      setTimeout(() => {
-                        socketRef.current?.emit(
-                          "stop_typing",
-                          {
-                            sender: currentUserId,
-                            receiver:
-                              selectedChat.user
-                                ._id,
-                          }
-                        );
-                      }, 800);
-                  }}
-                  className="flex-1 border rounded-full px-5 py-3 text-sm outline-none focus:border-red-400"
-                  placeholder="Type a message..."
-                  onKeyDown={(e) =>
-                    e.key === "Enter" &&
-                    sendMessage()
-                  }
+      <div className="flex-1 overflow-y-auto min-h-0">
+        {conversations.map((chat) => (
+          <div
+            key={chat._id}
+            onClick={() => openChat(chat)}
+            className="p-4 flex items-center gap-3 hover:bg-gray-50 cursor-pointer"
+          >
+            <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-300">
+              {chat.user.image && (
+                <img
+                  src={`${IMAGE_BASE_URL}${chat.user.image}`}
+                  className="w-full h-full object-cover"
                 />
-
-                {!recording ? (
-                  <button
-                    onClick={startRecording}
-                    className="w-11 h-11 rounded-full bg-gray-200 flex items-center justify-center hover:bg-gray-300"
-                  >
-                    <Mic size={20} />
-                  </button>
-                ) : (
-                  <button
-                    onClick={stopRecording}
-                    className="w-11 h-11 rounded-full bg-red-500 text-white flex items-center justify-center"
-                  >
-                    <Square size={18} />
-                  </button>
-                )}
-
-                <button
-                  onClick={sendMessage}
-                  className="w-11 h-11 rounded-full bg-red-500 text-white flex items-center justify-center hover:bg-red-600"
-                >
-                  <Send size={18} />
-                </button>
-
-              </div>
+              )}
             </div>
-          </>
-        )}
+
+            <div className="flex-1 overflow-hidden">
+              <p className="font-medium truncate">{chat.user.name}</p>
+              <p className="text-sm text-gray-500 truncate">
+                {chat.lastMessage || "Start conversation"}
+              </p>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
-  );
+
+    {/* CHAT AREA */}
+    <div className="flex-1 flex flex-col h-screen overflow-hidden">
+
+      {/* HEADER (fixed height) */}
+      <div className="h-16 shrink-0 border-b flex items-center justify-between px-4 bg-white">
+
+        <div className="flex items-center gap-3">
+
+          <button
+            onClick={() => setShowSidebar(true)}
+            className="md:hidden"
+          >
+            <ArrowLeft size={20} />
+          </button>
+
+          <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-300">
+            {selectedChat?.user?.image && (
+              <img
+                src={`${IMAGE_BASE_URL}${selectedChat.user.image}`}
+                className="w-full h-full object-cover"
+              />
+            )}
+          </div>
+
+          <div>
+            <h2 className="font-semibold">
+              {selectedChat?.user?.name}
+            </h2>
+            <p className="text-xs text-gray-500">
+              {onlineUsers.includes(selectedChat?.user?._id)
+                ? "Online"
+                : "Offline"}
+            </p>
+          </div>
+
+        </div>
+      </div>
+
+      {/* MESSAGES (ONLY SCROLL AREA) */}
+      <div
+        ref={messagesContainerRef}
+        onScroll={handleScroll}
+        className="flex-1 overflow-y-auto min-h-0 p-4 space-y-3 bg-gray-50"
+      >
+        {messages.map((msg, i) => (
+          <div
+            key={msg._id || i}
+            className={`flex ${
+              msg.sender === currentUserId ? "justify-end" : "justify-start"
+            }`}
+          >
+            <div
+              className={`max-w-[75%] px-4 py-2 rounded-2xl ${
+                msg.sender === currentUserId
+                  ? "bg-red-500 text-white"
+                  : "bg-white border"
+              }`}
+            >
+              {msg.type === "voice" ? (
+                <audio controls>
+                  <source src={`${AUDIO_BASE_URL}${msg.audio}`} />
+                </audio>
+              ) : (
+                <p className="text-sm break-words">{msg.text}</p>
+              )}
+            </div>
+          </div>
+        ))}
+
+        <div ref={messagesEndRef} />
+      </div>
+
+      {/* INPUT (ALWAYS VISIBLE) */}
+      <div className="shrink-0 border-t bg-white p-3">
+
+        <div className="flex items-center gap-2">
+
+          <input
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            className="flex-1 border rounded-full px-4 py-3 text-sm outline-none"
+            placeholder="Type a message..."
+            onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+          />
+
+          <button
+            onClick={sendMessage}
+            className="w-11 h-11 rounded-full bg-red-500 text-white flex items-center justify-center"
+          >
+            <Send size={18} />
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+);
 }

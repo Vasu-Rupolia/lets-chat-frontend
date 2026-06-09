@@ -538,32 +538,38 @@ export default function HomePage() {
   }
 
   return (
-  <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-red-50">
+  <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-red-50">
 
     <main className="max-w-7xl mx-auto px-4 md:px-8 py-8">
 
-      {/* Header */}
-      <div className="mb-8">
+      {/* HERO */}
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-red-500 via-pink-500 to-orange-400 p-8 md:p-12 text-white mb-10">
 
-        <h1 className="text-4xl font-bold text-gray-900">
-          Discover People
-        </h1>
+        <div className="absolute -top-16 -left-16 w-64 h-64 bg-white/10 rounded-full"></div>
+        <div className="absolute -bottom-20 -right-10 w-72 h-72 bg-white/10 rounded-full"></div>
 
-        <p className="text-gray-500 mt-2">
-          Connect with people who share your skills and interests.
-        </p>
+        <div className="relative z-10">
+          <h1 className="text-4xl md:text-5xl font-bold">
+            Discover Talented People
+          </h1>
+
+          <p className="mt-3 text-white/90 max-w-2xl text-lg">
+            Connect with developers, designers, writers and creators who
+            share your interests and skills.
+          </p>
+        </div>
 
       </div>
 
-      {/* Filters */}
+      {/* FILTERS */}
       <div className="flex flex-wrap gap-3 mb-8">
 
         <button
           onClick={() => setFilter("matched")}
-          className={`px-5 py-2.5 rounded-full font-medium transition-all duration-300 ${
+          className={`px-5 py-3 rounded-full font-medium transition-all duration-300 ${
             filter === "matched"
               ? "bg-gradient-to-r from-red-500 to-pink-500 text-white shadow-lg"
-              : "bg-white border border-gray-200 text-gray-600 hover:border-red-300"
+              : "bg-white border border-gray-200 text-gray-700 hover:border-red-300 hover:shadow"
           }`}
         >
           🎯 Best Matches
@@ -571,10 +577,10 @@ export default function HomePage() {
 
         <button
           onClick={() => setFilter("all")}
-          className={`px-5 py-2.5 rounded-full font-medium transition-all duration-300 ${
+          className={`px-5 py-3 rounded-full font-medium transition-all duration-300 ${
             filter === "all"
               ? "bg-gradient-to-r from-red-500 to-pink-500 text-white shadow-lg"
-              : "bg-white border border-gray-200 text-gray-600 hover:border-red-300"
+              : "bg-white border border-gray-200 text-gray-700 hover:border-red-300 hover:shadow"
           }`}
         >
           👥 All Users
@@ -582,72 +588,76 @@ export default function HomePage() {
 
       </div>
 
-      {/* Empty State */}
+      {/* EMPTY STATE */}
       {users.length === 0 && (
-        <div className="bg-white rounded-3xl shadow-lg p-12 text-center">
+        <div className="bg-white rounded-3xl shadow-lg p-16 text-center">
 
-          <div className="text-6xl mb-4">
+          <div className="text-7xl mb-4">
             🔍
           </div>
 
-          <h2 className="text-2xl font-bold text-gray-800">
+          <h2 className="text-3xl font-bold text-gray-800">
             No Users Found
           </h2>
 
-          <p className="text-gray-500 mt-2">
-            Try changing your filters.
+          <p className="text-gray-500 mt-3">
+            Try adjusting your filters.
           </p>
 
         </div>
       )}
 
-      {/* User Cards */}
-      <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      {/* USERS GRID */}
+      <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
 
         {users.map((user) => (
           <div
             key={user._id}
             className="
-              group
-              bg-white/80
-              backdrop-blur-sm
+              bg-white
               rounded-3xl
-              border
-              border-white
-              shadow-lg
+              overflow-hidden
+              shadow-md
               hover:shadow-2xl
               hover:-translate-y-2
               transition-all
-              duration-300
-              overflow-hidden
+              duration-500
+              group
             "
           >
 
-            {/* Top Gradient */}
-            <div className="h-20 bg-gray-700"></div>
+            {/* COVER */}
+            <div className="relative h-28 bg-gradient-to-br from-red-500 via-pink-500 to-orange-400">
 
-            {/* Avatar */}
-            <div className="-mt-10 flex justify-center relative">
+              <div className="absolute inset-0 opacity-20">
+                <div className="absolute w-40 h-40 bg-white rounded-full -top-10 -left-10"></div>
+                <div className="absolute w-32 h-32 bg-white rounded-full -bottom-10 -right-10"></div>
+              </div>
 
-              <div className="relative">
+            </div>
+
+            {/* AVATAR */}
+            <div className="relative flex justify-center">
+
+              <div className="-mt-16 relative">
 
                 <img
                   src={`https://api.skillbarter.codevocab.com/uploads/${user.image}`}
                   className="
-                    w-24
-                    h-24
+                    w-32
+                    h-32
                     rounded-full
-                    object-cover
                     border-4
                     border-white
-                    shadow-lg
+                    object-cover
+                    shadow-xl
                   "
                 />
 
                 <span
-                  className={`absolute bottom-2 right-1 w-4 h-4 rounded-full border-2 border-white ${
+                  className={`absolute bottom-3 right-3 w-5 h-5 rounded-full border-2 border-white ${
                     onlineUsers.includes(user._id!)
-                      ? "bg-green-500"
+                      ? "bg-green-500 animate-pulse"
                       : "bg-gray-400"
                   }`}
                 />
@@ -656,51 +666,63 @@ export default function HomePage() {
 
             </div>
 
-            {/* Content */}
-            <div className="p-5 text-center">
+            {/* CONTENT */}
+            <div className="px-6 pb-6 text-center">
 
-              <h2
-                onClick={() => router.push(`/profile/${user._id}`)}
-                className="
-                  text-lg
-                  font-bold
-                  text-gray-900
-                  cursor-pointer
-                  hover:text-red-500
-                "
-              >
-                {user.name}
-                (
-                  {/* Match Badge */}
-              {user.matchPercentage! > 0 && (
-                <div className="mt-3">
+              <div className="flex justify-center items-center gap-2 mt-4 flex-wrap">
 
+                <h2
+                  onClick={() => router.push(`/profile/${user._id}`)}
+                  className="
+                    text-xl
+                    font-bold
+                    text-gray-900
+                    cursor-pointer
+                    hover:text-red-500
+                    transition
+                  "
+                >
+                  {user.name}
+                </h2>
+
+                {user.matchPercentage! > 0 && (
                   <span
                     className="
-                      inline-flex
-                      items-center
-                      bg-green-50
-                      text-green-600
-                      px-3
-                      py-1
+                      bg-green-100
+                      text-green-700
+                      px-2 py-1
                       rounded-full
                       text-xs
                       font-semibold
                     "
                   >
-                    🎯 {user.matchPercentage}% Match
+                    {user.matchPercentage}% Match
                   </span>
+                )}
 
-                </div>
-              )}
-                )
-              </h2>
+              </div>
 
-              <p className="text-sm text-gray-500 truncate mt-1">
+              <p className="text-gray-500 text-sm mt-2 truncate">
                 {user.email}
               </p>
 
-              {/* Action Button */}
+              {/* SKILLS */}
+              {user.skills?.length ? (
+                <div className="flex flex-wrap justify-center gap-2 mt-4">
+
+                  {user.skills?.slice(0, 3).map((skill, index) => (
+                    <span
+                      key={index}
+                      className="px-3 py-1 rounded-full text-xs bg-gray-100 text-gray-700"
+                    >
+                      {skill}
+                    </span>
+                  ))}
+
+                </div>
+              ) : null}
+
+              {/* BUTTON */}
               <button
                 onClick={() => sendRequest(user._id)}
                 disabled={
@@ -710,11 +732,12 @@ export default function HomePage() {
                 }
                 className={`
                   w-full
-                  mt-5
-                  py-2.5
-                  rounded-xl
-                  font-medium
+                  mt-6
+                  py-3
+                  rounded-2xl
+                  font-semibold
                   transition-all
+                  duration-300
                   ${
                     user.isFriend
                       ? "bg-green-100 text-green-700"
@@ -722,7 +745,7 @@ export default function HomePage() {
                       ? "bg-yellow-100 text-yellow-700"
                       : user.hasReceivedRequest
                       ? "bg-blue-100 text-blue-700"
-                      : "bg-gradient-to-r from-red-500 to-pink-500 text-white hover:shadow-lg"
+                      : "bg-gradient-to-r from-red-500 to-pink-500 text-white hover:scale-105 hover:shadow-lg"
                   }
                 `}
               >
@@ -732,7 +755,7 @@ export default function HomePage() {
                   ? "⏳ Request Sent"
                   : user.hasReceivedRequest
                   ? "📨 Respond"
-                  : "+ Add Friend"}
+                  : "+ Connect"}
               </button>
 
             </div>

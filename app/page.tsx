@@ -624,7 +624,7 @@ export default function HomePage() {
           >
 
             {/* Top Gradient */}
-            <div className="h-20 bg-gradient-to-r from-red-500 via-pink-500 to-orange-400"></div>
+            <div className="h-20 bg-gray-700"></div>
 
             {/* Avatar */}
             <div className="-mt-10 flex justify-center relative">

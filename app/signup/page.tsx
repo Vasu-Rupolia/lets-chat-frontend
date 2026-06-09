@@ -151,7 +151,7 @@ export default function SignupPage() {
       <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-3xl">
 
         <h2 className="text-2xl text-gray-800 font-bold text-center mb-6">
-          Create Account 🚀
+          Create Account
         </h2>
 
         {error && (

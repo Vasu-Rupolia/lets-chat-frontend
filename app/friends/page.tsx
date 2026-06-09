@@ -43,60 +43,119 @@ export default function FriendsPage() {
   }
 
   return (
-  <div className="bg-gray-100 min-h-screen">
+  <div className="min-h-screen bg-gray-100">
 
-    {/* COVER */}
-    <div className="h-40 bg-gradient-to-r from-red-500 to-pink-600"></div>
+    {/* Cover */}
+    <div className="h-56 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500"></div>
 
-    <div className="max-w-4xl mx-auto px-6">
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 -mt-16">
 
-      <h1 className="text-2xl font-bold mt-6 mb-4 text-gray-600">
-        My Friends ({friends.length})
-      </h1>
+      {/* Header Card */}
+      <div className="bg-white rounded-2xl shadow-lg p-6 mb-8">
+        <div className="flex items-center justify-between flex-wrap gap-4">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">
+              My Friends
+            </h1>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            <p className="text-gray-500 mt-1">
+              {friends.length} {friends.length === 1 ? "friend" : "friends"}
+            </p>
+          </div>
 
-        {friends.length === 0 ? (
-          <p className="text-gray-500 col-span-full text-gray-600">No friends yet.</p>
-        ) : (
-          friends.map((friend) => (
+          <div className="bg-indigo-50 px-4 py-2 rounded-xl">
+            <span className="text-indigo-600 font-semibold">
+              👥 Friends Network
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {friends.length === 0 ? (
+        <div className="bg-white rounded-2xl shadow-sm p-10 text-center">
+          <div className="text-6xl mb-3">👋</div>
+
+          <h2 className="text-xl font-semibold text-gray-800">
+            No friends yet
+          </h2>
+
+          <p className="text-gray-500 mt-2">
+            Start connecting with people and build your network.
+          </p>
+        </div>
+      ) : (
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+
+          {friends.map((friend) => (
             <div
               key={friend._id}
-              className="bg-white rounded-lg shadow-sm p-3 flex items-center gap-3 cursor-pointer hover:shadow-md transition"
               onClick={() => router.push(`/profile/${friend._id}`)}
+              className="
+                bg-white
+                rounded-2xl
+                shadow-sm
+                hover:shadow-xl
+                hover:-translate-y-1
+                transition-all
+                duration-300
+                cursor-pointer
+                overflow-hidden
+                group
+              "
             >
-              {/* AVATAR */}
-              <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center flex-shrink-0">
-                {friend.image ? (
-                  <img
-                    src={`${IMAGE_BASE_URL}${friend.image}`}
-                    alt={friend.name}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <span className="text-sm font-bold text-gray-600">
-                    {friend.name?.charAt(0)}
-                  </span>
-                )}
-              </div>
+              {/* Mini Cover */}
+              <div className="h-24 bg-gradient-to-r from-indigo-500 to-purple-500"></div>
 
-              {/* INFO */}
-              <div className="min-w-0">
-                <h2 className="text-sm font-semibold text-gray-900 truncate">
+              <div className="px-5 pb-5">
+
+                {/* Avatar */}
+                <div className="-mt-10 mb-4">
+                  <div className="w-20 h-20 rounded-full border-4 border-white overflow-hidden bg-gray-200">
+                    {friend.image ? (
+                      <img
+                        src={`${IMAGE_BASE_URL}${friend.image}`}
+                        alt={friend.name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-2xl font-bold text-gray-600">
+                        {friend.name?.charAt(0).toUpperCase()}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Info */}
+                <h2 className="text-lg font-bold text-gray-900 truncate">
                   {friend.name}
                 </h2>
 
-                <p className="text-xs text-gray-500 truncate">
-                  {friend.email || "No email"}
+                <p className="text-sm text-gray-500 truncate mt-1">
+                  {friend.email || "No email available"}
                 </p>
+
+                {/* Button */}
+                <button
+                  className="
+                    w-full
+                    mt-4
+                    py-2.5
+                    rounded-xl
+                    bg-indigo-600
+                    text-white
+                    font-medium
+                    group-hover:bg-indigo-700
+                    transition
+                  "
+                >
+                  View Profile
+                </button>
               </div>
-
             </div>
-          ))
-        )}
+          ))}
 
-      </div>
-
+        </div>
+      )}
     </div>
   </div>
 );

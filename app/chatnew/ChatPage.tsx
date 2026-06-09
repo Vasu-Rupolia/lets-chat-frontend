@@ -936,7 +936,8 @@ return (
               {selectedChat?.user?.name}
             </h2>
             <p className="text-xs text-gray-500">
-              {onlineUsers.includes(selectedChat?.user?._id)
+              
+              {selectedChat?.user?._id && onlineUsers.includes(selectedChat?.user?._id)
                 ? "Online"
                 : "Offline"}
             </p>

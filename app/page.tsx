@@ -538,78 +538,168 @@ export default function HomePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <main className="p-4 md:p-6">
+  <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-red-50">
 
-        {/* FILTER BUTTONS */}
-        <div className="flex gap-3 mb-4">
-          <button
-            onClick={() => setFilter("matched")}
-            className={`px-4 py-2 rounded ${
-              filter === "matched"
-                ? "bg-red-500 text-white"
-                : "bg-gray-200"
-            }`}
-          >
-            Matched
-          </button>
+    <main className="max-w-7xl mx-auto px-4 md:px-8 py-8">
 
-          <button
-            onClick={() => setFilter("all")}
-            className={`px-4 py-2 rounded ${
-              filter === "all"
-                ? "bg-red-500 text-white"
-                : "bg-gray-200"
-            }`}
-          >
-            All Users
-          </button>
-        </div>
+      {/* Header */}
+      <div className="mb-8">
 
-        {/* NO USERS */}
-        {users.length === 0 && (
-          <p className="text-center text-gray-500">
-            No users found
+        <h1 className="text-4xl font-bold text-gray-900">
+          Discover People
+        </h1>
+
+        <p className="text-gray-500 mt-2">
+          Connect with people who share your skills and interests.
+        </p>
+
+      </div>
+
+      {/* Filters */}
+      <div className="flex flex-wrap gap-3 mb-8">
+
+        <button
+          onClick={() => setFilter("matched")}
+          className={`px-5 py-2.5 rounded-full font-medium transition-all duration-300 ${
+            filter === "matched"
+              ? "bg-gradient-to-r from-red-500 to-pink-500 text-white shadow-lg"
+              : "bg-white border border-gray-200 text-gray-600 hover:border-red-300"
+          }`}
+        >
+          🎯 Best Matches
+        </button>
+
+        <button
+          onClick={() => setFilter("all")}
+          className={`px-5 py-2.5 rounded-full font-medium transition-all duration-300 ${
+            filter === "all"
+              ? "bg-gradient-to-r from-red-500 to-pink-500 text-white shadow-lg"
+              : "bg-white border border-gray-200 text-gray-600 hover:border-red-300"
+          }`}
+        >
+          👥 All Users
+        </button>
+
+      </div>
+
+      {/* Empty State */}
+      {users.length === 0 && (
+        <div className="bg-white rounded-3xl shadow-lg p-12 text-center">
+
+          <div className="text-6xl mb-4">
+            🔍
+          </div>
+
+          <h2 className="text-2xl font-bold text-gray-800">
+            No Users Found
+          </h2>
+
+          <p className="text-gray-500 mt-2">
+            Try changing your filters.
           </p>
-        )}
 
-        {/* USERS GRID */}
-        <div className="grid gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {users.map((user) => (
-            <div
-              key={user._id}
-              className="bg-white rounded-2xl border hover:shadow-lg p-5 text-center"
-            >
+        </div>
+      )}
+
+      {/* User Cards */}
+      <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+
+        {users.map((user) => (
+          <div
+            key={user._id}
+            className="
+              group
+              bg-white/80
+              backdrop-blur-sm
+              rounded-3xl
+              border
+              border-white
+              shadow-lg
+              hover:shadow-2xl
+              hover:-translate-y-2
+              transition-all
+              duration-300
+              overflow-hidden
+            "
+          >
+
+            {/* Top Gradient */}
+            <div className="h-20 bg-gradient-to-r from-red-500 via-pink-500 to-orange-400"></div>
+
+            {/* Avatar */}
+            <div className="-mt-10 flex justify-center relative">
+
               <div className="relative">
+
                 <img
                   src={`https://api.skillbarter.codevocab.com/uploads/${user.image}`}
-                  className="w-20 h-20 rounded-full mx-auto object-cover"
+                  className="
+                    w-24
+                    h-24
+                    rounded-full
+                    object-cover
+                    border-4
+                    border-white
+                    shadow-lg
+                  "
                 />
 
                 <span
-                  className={`absolute bottom-1 right-8 w-3 h-3 rounded-full border-2 border-white ${
+                  className={`absolute bottom-2 right-1 w-4 h-4 rounded-full border-2 border-white ${
                     onlineUsers.includes(user._id!)
                       ? "bg-green-500"
                       : "bg-gray-400"
                   }`}
-                ></span>
+                />
+
               </div>
+
+            </div>
+
+            {/* Content */}
+            <div className="p-5 text-center">
 
               <h2
                 onClick={() => router.push(`/profile/${user._id}`)}
-                className="mt-3 font-semibold cursor-pointer hover:text-red-500"
+                className="
+                  text-lg
+                  font-bold
+                  text-gray-900
+                  cursor-pointer
+                  hover:text-red-500
+                "
               >
                 {user.name}
               </h2>
 
-              <p className="text-xs text-gray-500">{user.email}</p>
+              <p className="text-sm text-gray-500 truncate mt-1">
+                {user.email}
+              </p>
 
+              {/* Match Badge */}
               {user.matchPercentage! > 0 && (
-                <p className="text-xs text-green-600 mt-1">
-                  {user.matchPercentage}% match
-                </p>
+                <div className="mt-3">
+
+                  <span
+                    className="
+                      inline-flex
+                      items-center
+                      bg-green-50
+                      text-green-600
+                      px-3
+                      py-1
+                      rounded-full
+                      text-xs
+                      font-semibold
+                    "
+                  >
+                    🎯 {user.matchPercentage}% Match
+                  </span>
+
+                </div>
               )}
 
+              {/* Action Button */}
               <button
                 onClick={() => sendRequest(user._id)}
                 disabled={
@@ -617,21 +707,42 @@ export default function HomePage() {
                   user.hasSentRequest ||
                   user.hasReceivedRequest
                 }
-                className="w-full mt-3 bg-red-500 text-white px-3 py-2 rounded"
+                className={`
+                  w-full
+                  mt-5
+                  py-2.5
+                  rounded-xl
+                  font-medium
+                  transition-all
+                  ${
+                    user.isFriend
+                      ? "bg-green-100 text-green-700"
+                      : user.hasSentRequest
+                      ? "bg-yellow-100 text-yellow-700"
+                      : user.hasReceivedRequest
+                      ? "bg-blue-100 text-blue-700"
+                      : "bg-gradient-to-r from-red-500 to-pink-500 text-white hover:shadow-lg"
+                  }
+                `}
               >
                 {user.isFriend
-                  ? "Friends"
+                  ? "✓ Friends"
                   : user.hasSentRequest
-                  ? "Request Sent"
+                  ? "⏳ Request Sent"
                   : user.hasReceivedRequest
-                  ? "Respond"
+                  ? "📨 Respond"
                   : "+ Add Friend"}
               </button>
-            </div>
-          ))}
-        </div>
 
-      </main>
-    </div>
-  );
+            </div>
+
+          </div>
+        ))}
+
+      </div>
+
+    </main>
+
+  </div>
+);
 }

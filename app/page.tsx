@@ -670,13 +670,8 @@ export default function HomePage() {
                 "
               >
                 {user.name}
-              </h2>
-
-              <p className="text-sm text-gray-500 truncate mt-1">
-                {user.email}
-              </p>
-
-              {/* Match Badge */}
+                (
+                  {/* Match Badge */}
               {user.matchPercentage! > 0 && (
                 <div className="mt-3">
 
@@ -698,6 +693,12 @@ export default function HomePage() {
 
                 </div>
               )}
+                )
+              </h2>
+
+              <p className="text-sm text-gray-500 truncate mt-1">
+                {user.email}
+              </p>
 
               {/* Action Button */}
               <button

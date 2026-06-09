@@ -537,12 +537,21 @@ export default function ChatPage() {
   }
 
   return (
-    <div className="h-screen flex bg-gray-100 overflow-hidden">
+    // <div className="h-screen flex bg-gray-100 overflow-hidden">
+    <div className="h-[100dvh] flex bg-gray-50 overflow-hidden">
 
       {/* SIDEBAR */}
 
       <div
-        className={`fixed md:static z-20 top-0 left-0 h-full w-full md:w-[340px] bg-white border-r overflow-y-auto transition-transform duration-300
+        className={`
+          fixed md:static
+          flex flex-col
+          z-20
+          top-0 left-0
+          h-full
+          w-full md:w-[340px]
+          bg-white border-r border-gray-100
+          transition-transform duration-300
         ${
           showSidebar
             ? "translate-x-0"
@@ -550,7 +559,7 @@ export default function ChatPage() {
         }`}
       >
 
-        <div className="p-4 border-b sticky top-0 bg-white z-10">
+        <div className="p-4 border-b border-gray-100 sticky top-0 bg-white z-10">
           <h1 className="font-bold text-2xl text-gray-800">
             Chats
           </h1>
@@ -562,7 +571,7 @@ export default function ChatPage() {
           <div
             key={chat._id}
             onClick={() => openChat(chat)}
-            className={`flex items-center gap-3 p-4 cursor-pointer transition hover:bg-gray-100
+            className={`flex items-center gap-3 p-4 cursor-pointer transition hover:bg-gray-50
             ${
               selectedChat?._id === chat._id
                 ? "bg-red-50"
@@ -606,7 +615,7 @@ export default function ChatPage() {
     <div
       key={friend._id}
       onClick={() => startChat(friend)}
-      className="flex items-center gap-3 p-3 cursor-pointer hover:bg-gray-100 rounded-lg"
+      className="flex items-center gap-3 p-3 cursor-pointer hover:bg-gray-50 rounded-lg"
     >
       <div className="w-10 h-10 rounded-full bg-gray-300 overflow-hidden">
         {friend.image && (
@@ -626,7 +635,8 @@ export default function ChatPage() {
 
       {/* CHAT AREA */}
 
-      <div className="flex-1 flex flex-col bg-white">
+      {/* <div className="flex-1 flex flex-col bg-white"> */}
+      <div className="flex-1 flex flex-col bg-white min-h-0 overflow-hidden">
 
         {!selectedChat ? (
           <div className="flex-1 flex items-center justify-center text-gray-400">
@@ -636,7 +646,8 @@ export default function ChatPage() {
           <>
             {/* HEADER */}
 
-            <div className="h-16 border-b px-4 flex items-center justify-between bg-white">
+            {/* <div className="h-16 border-b px-4 flex items-center justify-between bg-white"> */}
+            <div className="h-16 shrink-0 border-b border-gray-100 px-4 flex items-center justify-between bg-white">
 
               <div className="flex items-center gap-3">
 
@@ -693,7 +704,7 @@ export default function ChatPage() {
             <div
               ref={messagesContainerRef}
               onScroll={handleScroll}
-              className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-100"
+              className="flex-1 min-h-0 overflow-y-auto p-4 space-y-3 bg-gray-50"
             >
 
               {messages.map((msg, i) => (
@@ -710,8 +721,8 @@ export default function ChatPage() {
                     className={`max-w-[80%] rounded-2xl px-4 py-2 shadow-sm
                     ${
                       msg.sender === currentUserId
-                        ? "bg-red-500 text-white rounded-br-sm"
-                        : "bg-white text-gray-800 rounded-bl-sm"
+                      ? "bg-red-500 text-white rounded-br-sm"
+                      : "bg-white border border-gray-100 text-gray-800 rounded-bl-sm"
                     }`}
                   >
 
@@ -759,7 +770,7 @@ export default function ChatPage() {
 
             {/* INPUT */}
 
-            <div className="p-3 bg-white border-t">
+            <div className="shrink-0 p-3 bg-white border-t border-gray-100">
 
               {recording && (
                 <div className="mb-2 text-sm text-red-500 animate-pulse">

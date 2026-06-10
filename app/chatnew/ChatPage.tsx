@@ -859,28 +859,28 @@ export default function ChatPage() {
 //     </div>
 //   );
 
-  return (
-  <div className="h-dvh flex bg-gray-50 overflow-hidden">
+return (
+  <div className="h-screen flex bg-gray-50 overflow-hidden">
 
     {/* SIDEBAR */}
     <div
       className={`
+        fixed md:static
         flex flex-col
-        w-[340px]
+        z-10
+        top-0 left-0
+        h-full
+        w-full md:w-[340px]
         bg-white border-r border-gray-100
         transition-transform duration-300
         ${showSidebar ? "translate-x-0" : "-translate-x-full md:translate-x-0"}
-        md:translate-x-0
-        fixed md:static
-        inset-y-0 left-0
-        z-20
       `}
     >
       <div className="p-4 border-b shrink-0">
         <h1 className="font-bold text-2xl">Chats</h1>
       </div>
 
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto min-h-0">
         {conversations.map((chat) => (
           <div
             key={chat._id}
@@ -896,7 +896,7 @@ export default function ChatPage() {
               )}
             </div>
 
-            <div className="flex-1 min-w-0">
+            <div className="flex-1 overflow-hidden">
               <p className="font-medium truncate">{chat.user.name}</p>
               <p className="text-sm text-gray-500 truncate">
                 {chat.lastMessage || "Start conversation"}
@@ -908,10 +908,11 @@ export default function ChatPage() {
     </div>
 
     {/* CHAT AREA */}
-    <div className="flex-1 flex flex-col min-h-0">
+    <div className="flex-1 flex flex-col h-screen overflow-hidden">
 
-      {/* HEADER */}
+      {/* HEADER (fixed height) */}
       <div className="h-16 shrink-0 border-b flex items-center justify-between px-4 bg-white">
+
         <div className="flex items-center gap-3">
 
           <button
@@ -935,8 +936,8 @@ export default function ChatPage() {
               {selectedChat?.user?.name}
             </h2>
             <p className="text-xs text-gray-500">
-              {selectedChat?.user?._id &&
-              onlineUsers.includes(selectedChat?.user?._id)
+              
+              {selectedChat?.user?._id && onlineUsers.includes(selectedChat?.user?._id)
                 ? "Online"
                 : "Offline"}
             </p>
@@ -949,7 +950,7 @@ export default function ChatPage() {
       <div
         ref={messagesContainerRef}
         onScroll={handleScroll}
-        className="flex-1 min-h-0 overflow-y-auto p-4 space-y-3 bg-gray-50"
+        className="flex-1 overflow-y-auto min-h-0 p-4 space-y-3 bg-gray-50"
       >
         {messages.map((msg, i) => (
           <div
@@ -981,7 +982,9 @@ export default function ChatPage() {
 
       {/* INPUT (ALWAYS VISIBLE) */}
       <div className="shrink-0 border-t bg-white p-3">
+
         <div className="flex items-center gap-2">
+
           <input
             value={input}
             onChange={(e) => setInput(e.target.value)}
@@ -996,10 +999,13 @@ export default function ChatPage() {
           >
             <Send size={18} />
           </button>
+
         </div>
+
       </div>
 
     </div>
+
   </div>
 );
 }

@@ -859,8 +859,8 @@ export default function ChatPage() {
 //     </div>
 //   );
 
-return (
-  <div className="h-screen flex bg-gray-50 overflow-hidden">
+  return (
+  <div className="h-screen w-screen flex bg-gray-50 overflow-hidden select-none">
 
     {/* SIDEBAR */}
     <div
@@ -872,7 +872,7 @@ return (
         h-full
         w-full md:w-[340px]
         bg-white border-r border-gray-100
-        transition-transform duration-300
+        transition-transform duration-300 shrink-0
         ${showSidebar ? "translate-x-0" : "-translate-x-full md:translate-x-0"}
       `}
     >
@@ -884,14 +884,18 @@ return (
         {conversations.map((chat) => (
           <div
             key={chat._id}
-            onClick={() => openChat(chat)}
+            onClick={() => {
+              openChat(chat);
+              setShowSidebar(false); // Closes sidebar on mobile after selecting a chat
+            }}
             className="p-4 flex items-center gap-3 hover:bg-gray-50 cursor-pointer"
           >
-            <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-300">
+            <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-300 shrink-0">
               {chat.user.image && (
                 <img
                   src={`${IMAGE_BASE_URL}${chat.user.image}`}
                   className="w-full h-full object-cover"
+                  alt=""
                 />
               )}
             </div>
@@ -908,39 +912,43 @@ return (
     </div>
 
     {/* CHAT AREA */}
-    <div className="flex-1 flex flex-col h-screen overflow-hidden">
+    {/* FIXED: Removed h-screen, added h-full, min-w-0 to prevent flex blowout */}
+    <div className="flex-1 flex flex-col h-full min-w-0 bg-gray-50 overflow-hidden">
 
-      {/* HEADER (fixed height) */}
-      <div className="h-16 shrink-0 border-b flex items-center justify-between px-4 bg-white">
-
+      {/* HEADER */}
+      <div className="h-16 shrink-0 border-b flex items-center justify-between px-4 bg-white z-10">
         <div className="flex items-center gap-3">
-
+          
+          {/* Menu button to bring sidebar back on mobile layout */}
           <button
             onClick={() => setShowSidebar(true)}
-            className="md:hidden"
+            className="md:hidden p-1 hover:bg-gray-100 rounded"
           >
             <ArrowLeft size={20} />
           </button>
 
-          <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-300">
+          <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-300 shrink-0">
             {selectedChat?.user?.image && (
               <img
                 src={`${IMAGE_BASE_URL}${selectedChat.user.image}`}
                 className="w-full h-full object-cover"
+                alt=""
               />
             )}
           </div>
 
+          {/* FIXED: Dynamic Chatting User Name Header Info */}
           <div>
-            <h2 className="font-semibold">
-              {selectedChat?.user?.name}
+            <h2 className="font-semibold text-sm leading-tight">
+              {selectedChat?.user?.name || "Select a conversation"}
             </h2>
-            <p className="text-xs text-gray-500">
-              
-              {selectedChat?.user?._id && onlineUsers.includes(selectedChat?.user?._id)
-                ? "Online"
-                : "Offline"}
-            </p>
+            {selectedChat?.user && (
+              <p className="text-xs text-gray-400">
+                {selectedChat?.user?._id && onlineUsers.includes(selectedChat?.user?._id)
+                  ? "Online"
+                  : "Offline"}
+              </p>
+            )}
           </div>
 
         </div>
@@ -952,56 +960,59 @@ return (
         onScroll={handleScroll}
         className="flex-1 overflow-y-auto min-h-0 p-4 space-y-3 bg-gray-50"
       >
-        {messages.map((msg, i) => (
-          <div
-            key={msg._id || i}
-            className={`flex ${
-              msg.sender === currentUserId ? "justify-end" : "justify-start"
-            }`}
-          >
+        {selectedChat ? (
+          messages.map((msg, i) => (
             <div
-              className={`max-w-[75%] px-4 py-2 rounded-2xl ${
-                msg.sender === currentUserId
-                  ? "bg-red-500 text-white"
-                  : "bg-white border"
+              key={msg._id || i}
+              className={`flex ${
+                msg.sender === currentUserId ? "justify-end" : "justify-start"
               }`}
             >
-              {msg.type === "voice" ? (
-                <audio controls>
-                  <source src={`${AUDIO_BASE_URL}${msg.audio}`} />
-                </audio>
-              ) : (
-                <p className="text-sm break-words">{msg.text}</p>
-              )}
+              <div
+                className={`max-w-[75%] px-4 py-2 rounded-2xl ${
+                  msg.sender === currentUserId
+                    ? "bg-red-500 text-white"
+                    : "bg-white border"
+                }`}
+              >
+                {msg.type === "voice" ? (
+                  <audio controls className="max-w-full">
+                    <source src={`${AUDIO_BASE_URL}${msg.audio}`} />
+                  </audio>
+                ) : (
+                  <p className="text-sm break-words">{msg.text}</p>
+                )}
+              </div>
             </div>
+          ))
+        ) : (
+          <div className="h-full flex items-center justify-center text-gray-400 text-sm">
+            Please select a chat to start messaging
           </div>
-        ))}
+        )}
 
         <div ref={messagesEndRef} />
       </div>
 
-      {/* INPUT (ALWAYS VISIBLE) */}
+      {/* INPUT (ALWAYS VISIBLE AT THE BOTTOM) */}
       <div className="shrink-0 border-t bg-white p-3">
-
         <div className="flex items-center gap-2">
-
           <input
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            className="flex-1 border rounded-full px-4 py-3 text-sm outline-none"
+            className="flex-1 border rounded-full px-4 py-3 text-sm outline-none bg-gray-50 focus:bg-white focus:border-gray-300 transition-colors"
             placeholder="Type a message..."
             onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+            disabled={!selectedChat}
           />
-
           <button
             onClick={sendMessage}
-            className="w-11 h-11 rounded-full bg-red-500 text-white flex items-center justify-center"
+            disabled={!selectedChat || !input.trim()}
+            className="w-11 h-11 rounded-full bg-red-500 text-white flex items-center justify-center shrink-0 hover:bg-red-600 active:scale-95 transition-all disabled:opacity-50 disabled:scale-100"
           >
             <Send size={18} />
           </button>
-
         </div>
-
       </div>
 
     </div>

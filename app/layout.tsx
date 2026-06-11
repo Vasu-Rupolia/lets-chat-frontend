@@ -24,11 +24,20 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
+    // <html
+    //   lang="en"
+    //   className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+    // >
+    //   <body className="min-h-full flex flex-col">
+    //     <ClientLayout>{children}</ClientLayout>
+    //   </body>
+    // </html>
+
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable}`}
     >
-      <body className="min-h-full flex flex-col">
+      <body className="h-screen overflow-hidden">
         <ClientLayout>{children}</ClientLayout>
       </body>
     </html>

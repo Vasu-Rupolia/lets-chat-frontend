@@ -537,7 +537,7 @@ export default function ChatPage() {
   }
 
   return (
-  <div className="h-[100dvh] overflow-hidden bg-gray-100">
+  <div className="h-[calc(100vh-64px)] overflow-hidden bg-gray-100">
 
     <div className="h-full flex overflow-hidden">
 

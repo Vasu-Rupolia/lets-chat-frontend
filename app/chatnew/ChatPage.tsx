@@ -537,130 +537,157 @@ export default function ChatPage() {
   }
 
   return (
-    // <div className="h-screen flex bg-gray-100 overflow-hidden">
-    <div className="fixed inset-0 flex bg-gray-50 overflow-hidden">
+  <div className="h-[100dvh] overflow-hidden bg-gray-100">
+
+    <div className="h-full flex overflow-hidden">
 
       {/* SIDEBAR */}
 
-      <div
-  className={`
-    fixed md:static
-    flex flex-col
-    z-20
-    top-0 left-0
-    h-full
-    w-full md:w-[340px]
-    bg-white border-r border-gray-100
-    transition-transform duration-300
-    ${
-      showSidebar
-        ? "translate-x-0"
-        : "-translate-x-full md:translate-x-0"
-    }
-  `}
->
-
-  {/* Header */}
-  <div className="p-4 border-b border-gray-100 shrink-0">
-    <h1 className="font-bold text-2xl text-gray-800">
-      Chats
-    </h1>
-  </div>
-
-  {/* SCROLLABLE CONTENT */}
-  <div className="flex-1 overflow-y-auto min-h-0">
-
-    {/* Conversations */}
-    {conversations.map((chat) => (
-      <div
-        key={chat._id}
-        onClick={() => openChat(chat)}
-        className={`flex items-center gap-3 p-4 cursor-pointer transition hover:bg-gray-50 ${
-          selectedChat?._id === chat._id
-            ? "bg-red-50"
-            : ""
-        }`}
+      <aside
+        className={`
+          ${
+            selectedChat && !showSidebar
+              ? "hidden md:flex"
+              : "flex"
+          }
+          w-full md:w-[340px]
+          bg-white
+          border-r border-gray-200
+          flex-col
+          overflow-hidden
+          shrink-0
+        `}
       >
-        <div className="relative">
-          <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-300">
-            {chat.user.image && (
-              <img
-                src={`${IMAGE_BASE_URL}${chat.user.image}`}
-                className="w-full h-full object-cover"
-              />
-            )}
+        {/* HEADER */}
+
+        <div className="h-16 shrink-0 border-b px-5 flex items-center justify-between">
+          <h2 className="font-bold text-xl">
+            Chats
+          </h2>
+        </div>
+
+        {/* CONVERSATIONS */}
+
+        <div className="flex-1 overflow-y-auto">
+
+          {conversations.map((chat) => (
+            <div
+              key={chat._id}
+              onClick={() => openChat(chat)}
+              className={`
+                mx-2 my-1
+                rounded-xl
+                cursor-pointer
+                transition
+                hover:bg-gray-100
+                ${
+                  selectedChat?._id === chat._id
+                    ? "bg-blue-50"
+                    : ""
+                }
+              `}
+            >
+              <div className="p-3 flex items-center gap-3">
+
+                <div className="relative">
+
+                  <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-300">
+                    {chat.user.image && (
+                      <img
+                        src={`${IMAGE_BASE_URL}${chat.user.image}`}
+                        className="w-full h-full object-cover"
+                      />
+                    )}
+                  </div>
+
+                  {onlineUsers.includes(chat.user._id) && (
+                    <span className="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-green-500 border-2 border-white" />
+                  )}
+                </div>
+
+                <div className="flex-1 min-w-0">
+
+                  <p className="font-medium truncate">
+                    {chat.user.name}
+                  </p>
+
+                  <p className="text-sm text-gray-500 truncate">
+                    {chat.lastMessage ||
+                      "Start conversation"}
+                  </p>
+
+                </div>
+              </div>
+            </div>
+          ))}
+
+          {/* FRIENDS */}
+
+          <div className="mt-4 border-t p-3">
+
+            <h3 className="text-xs font-semibold text-gray-500 mb-3 uppercase">
+              Friends
+            </h3>
+
+            {friends.map((friend) => (
+              <div
+                key={friend._id}
+                onClick={() => startChat(friend)}
+                className="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-100 cursor-pointer"
+              >
+
+                <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-300">
+                  {friend.image && (
+                    <img
+                      src={`${IMAGE_BASE_URL}${friend.image}`}
+                      className="w-full h-full object-cover"
+                    />
+                  )}
+                </div>
+
+                <span className="truncate">
+                  {friend.name}
+                </span>
+
+              </div>
+            ))}
           </div>
-
-          {onlineUsers.includes(chat.user._id) && (
-            <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></span>
-          )}
         </div>
-
-        <div className="flex-1 overflow-hidden">
-          <p className="font-medium text-gray-800 truncate">
-            {chat.user.name}
-          </p>
-
-          <p className="text-sm text-gray-500 truncate">
-            {chat.lastMessage || "Start conversation"}
-          </p>
-        </div>
-      </div>
-    ))}
-
-    {/* Friends */}
-    <div className="p-3 border-t border-gray-100">
-      <h3 className="text-sm font-semibold text-gray-500 mb-2">
-        Friends
-      </h3>
-
-      {friends.map((friend) => (
-        <div
-          key={friend._id}
-          onClick={() => startChat(friend)}
-          className="flex items-center gap-3 p-3 cursor-pointer hover:bg-gray-50 rounded-lg"
-        >
-          <div className="w-10 h-10 rounded-full bg-gray-300 overflow-hidden">
-            {friend.image && (
-              <img
-                src={`${IMAGE_BASE_URL}${friend.image}`}
-                className="w-full h-full object-cover"
-              />
-            )}
-          </div>
-
-          <span className="truncate text-gray-800">
-            {friend.name}
-          </span>
-        </div>
-      ))}
-    </div>
-
-  </div>
-</div>
+      </aside>
 
       {/* CHAT AREA */}
 
-      {/* <div className="flex-1 flex flex-col bg-white"> */}
-      <div className="flex-1 flex flex-col bg-white min-h-0 overflow-hidden">
+      <main
+        className={`
+          flex-1
+          bg-gray-50
+          flex
+          flex-col
+          overflow-hidden
+          ${
+            !selectedChat && showSidebar
+              ? "hidden md:flex"
+              : "flex"
+          }
+        `}
+      >
 
         {!selectedChat ? (
           <div className="flex-1 flex items-center justify-center text-gray-400">
-            Select a chat
+            Select a conversation
           </div>
         ) : (
           <>
             {/* HEADER */}
 
-            {/* <div className="h-16 border-b px-4 flex items-center justify-between bg-white"> */}
-            <div className="h-16 shrink-0 border-b border-gray-100 px-4 flex items-center justify-between bg-white">
+            <div className="h-16 shrink-0 bg-white border-b px-4 flex items-center justify-between">
 
               <div className="flex items-center gap-3">
 
                 <button
                   onClick={() => {
                     setShowSidebar(true);
-                    router.push("/chat");
+                    setSelectedChat(null);
                   }}
                   className="md:hidden"
                 >
@@ -668,7 +695,8 @@ export default function ChatPage() {
                 </button>
 
                 <div className="relative">
-                  <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-300">
+
+                  <div className="w-11 h-11 rounded-full overflow-hidden bg-gray-300">
                     {selectedChat.user.image && (
                       <img
                         src={`${IMAGE_BASE_URL}${selectedChat.user.image}`}
@@ -680,12 +708,13 @@ export default function ChatPage() {
                   {onlineUsers.includes(
                     selectedChat.user._id
                   ) && (
-                    <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></span>
+                    <span className="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-green-500 border-2 border-white" />
                   )}
                 </div>
 
                 <div>
-                  <h2 className="font-semibold text-gray-800">
+
+                  <h2 className="font-semibold">
                     {selectedChat.user.name}
                   </h2>
 
@@ -696,13 +725,15 @@ export default function ChatPage() {
                       ? "Online"
                       : "Offline"}
                   </p>
+
                 </div>
               </div>
 
-              <div className="flex items-center gap-4 text-gray-600">
+              <div className="flex gap-4 text-gray-600">
                 <Phone size={20} />
                 <Video size={20} />
               </div>
+
             </div>
 
             {/* MESSAGES */}
@@ -710,7 +741,7 @@ export default function ChatPage() {
             <div
               ref={messagesContainerRef}
               onScroll={handleScroll}
-              className="flex-1 min-h-0 overflow-y-auto p-4 space-y-3 bg-gray-50"
+              className="flex-1 overflow-y-auto p-4 space-y-4"
             >
 
               {messages.map((msg, i) => (
@@ -722,35 +753,44 @@ export default function ChatPage() {
                       : "justify-start"
                   }`}
                 >
-
                   <div
-                    className={`max-w-[80%] rounded-2xl px-4 py-2 shadow-sm
-                    ${
-                      msg.sender === currentUserId
-                      ? "bg-red-500 text-white rounded-br-sm"
-                      : "bg-white border border-gray-100 text-gray-800 rounded-bl-sm"
-                    }`}
+                    className={`
+                      max-w-[80%]
+                      px-4
+                      py-3
+                      rounded-3xl
+                      shadow-sm
+                      ${
+                        msg.sender === currentUserId
+                          ? "bg-blue-600 text-white rounded-br-md"
+                          : "bg-white border rounded-bl-md"
+                      }
+                    `}
                   >
 
                     {msg.type === "voice" ? (
-                      <audio controls className="max-w-full">
+                      <audio controls>
                         <source
                           src={`${AUDIO_BASE_URL}${msg.audio}`}
                         />
                       </audio>
                     ) : (
-                      <p className="text-sm break-words">
+                      <p className="break-words text-sm">
                         {msg.text}
                       </p>
                     )}
 
-                    <p
-                      className={`text-[10px] mt-1 text-right
-                      ${
-                        msg.sender === currentUserId
-                          ? "text-red-100"
-                          : "text-gray-400"
-                      }`}
+                    <div
+                      className={`
+                        text-[10px]
+                        mt-1
+                        text-right
+                        ${
+                          msg.sender === currentUserId
+                            ? "text-blue-100"
+                            : "text-gray-400"
+                        }
+                      `}
                     >
                       {msg.createdAt
                         ? new Date(
@@ -760,13 +800,14 @@ export default function ChatPage() {
                             minute: "2-digit",
                           })
                         : ""}
-                    </p>
+                    </div>
+
                   </div>
                 </div>
               ))}
 
               {isTyping && (
-                <div className="text-xs text-gray-500 px-2">
+                <div className="text-xs text-gray-500">
                   {selectedChat.user.name} is typing...
                 </div>
               )}
@@ -776,52 +817,17 @@ export default function ChatPage() {
 
             {/* INPUT */}
 
-            <div className="shrink-0 p-3 bg-white border-t border-gray-100">
+            <div className="shrink-0 bg-white border-t p-3">
 
-              {recording && (
-                <div className="mb-2 text-sm text-red-500 animate-pulse">
-                  🎤 Recording voice...
-                </div>
-              )}
-
-              {uploadingVoice && (
-                <div className="mb-2 text-sm text-blue-500">
-                  Uploading voice...
-                </div>
-              )}
-
-              <div className="flex items-center gap-2">
+              <div className="flex gap-2">
 
                 <input
                   value={input}
-                  onChange={(e) => {
-                    setInput(e.target.value);
-
-                    socketRef.current?.emit("typing", {
-                      sender: currentUserId,
-                      receiver:
-                        selectedChat.user._id,
-                    });
-
-                    clearTimeout(
-                      typingTimeout.current
-                    );
-
-                    typingTimeout.current =
-                      setTimeout(() => {
-                        socketRef.current?.emit(
-                          "stop_typing",
-                          {
-                            sender: currentUserId,
-                            receiver:
-                              selectedChat.user
-                                ._id,
-                          }
-                        );
-                      }, 800);
-                  }}
-                  className="flex-1 border rounded-full px-5 py-3 text-sm outline-none focus:border-red-400"
+                  onChange={(e) =>
+                    setInput(e.target.value)
+                  }
                   placeholder="Type a message..."
+                  className="flex-1 h-12 px-4 rounded-full border outline-none focus:ring-2 focus:ring-blue-500"
                   onKeyDown={(e) =>
                     e.key === "Enter" &&
                     sendMessage()
@@ -831,14 +837,14 @@ export default function ChatPage() {
                 {!recording ? (
                   <button
                     onClick={startRecording}
-                    className="w-11 h-11 rounded-full bg-gray-200 flex items-center justify-center hover:bg-gray-300"
+                    className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center"
                   >
                     <Mic size={20} />
                   </button>
                 ) : (
                   <button
                     onClick={stopRecording}
-                    className="w-11 h-11 rounded-full bg-red-500 text-white flex items-center justify-center"
+                    className="w-12 h-12 rounded-full bg-red-500 text-white flex items-center justify-center"
                   >
                     <Square size={18} />
                   </button>
@@ -846,7 +852,7 @@ export default function ChatPage() {
 
                 <button
                   onClick={sendMessage}
-                  className="w-11 h-11 rounded-full bg-red-500 text-white flex items-center justify-center hover:bg-red-600"
+                  className="w-12 h-12 rounded-full bg-blue-600 text-white flex items-center justify-center"
                 >
                   <Send size={18} />
                 </button>
@@ -855,9 +861,11 @@ export default function ChatPage() {
             </div>
           </>
         )}
-      </div>
+      </main>
+
     </div>
-  );
+  </div>
+);
 
 // return (
 //   <div className="h-screen flex bg-gray-50 overflow-hidden">

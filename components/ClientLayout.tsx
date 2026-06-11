@@ -64,9 +64,14 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
     <>
       <Header onMenuClick={() => setSidebarOpen(true)} />
 
-      <main className="pt-16 h-screen overflow-hidden">
-        {children}
-      </main>
+      <div className="pt-16 flex">
+        {/* <Sidebar
+          isOpen={sidebarOpen}
+          onClose={() => setSidebarOpen(false)}
+        /> */}
+
+        <main className="flex-1">{children}</main>
+      </div>
     </>
   );
 }

@@ -46,7 +46,7 @@ export default function FriendsPage() {
   <div className="min-h-screen bg-gray-100">
 
     {/* Cover */}
-    <div className="h-56 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500"></div>
+    <div className="h-56 bg-gradient-to-br from-red-600 via-pink-500 to-orange-400"></div>
 
     <div className="max-w-5xl mx-auto px-4 sm:px-6 -mt-16">
 

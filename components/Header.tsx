@@ -32,6 +32,31 @@ export default function Header({ onMenuClick }: HeaderProps) {
   const [requestCount, setRequestCount] = useState(0);
   const [loadingRequests, setLoadingRequests] = useState(false);
 
+  const menuRef = useRef<HTMLDivElement>(null);
+  const requestRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as Node;
+
+      // MENU close
+      if (menuRef.current && !menuRef.current.contains(target)) {
+        setOpen(false);
+      }
+
+      // FRIEND REQUEST close
+      if (requestRef.current && !requestRef.current.contains(target)) {
+        setShowRequests(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   // SOCKET INIT + LISTENER
   useEffect(() => {
     const socket = io(
@@ -268,7 +293,7 @@ export default function Header({ onMenuClick }: HeaderProps) {
       <div className="flex items-center gap-4 relative text-gray-600 hover:cursor-pointer">
         
         {/* FRIEND REQUEST */}
-        <div className="relative">
+        <div ref={requestRef} className="relative">
           <div onClick={toggleRequests}>
             <Handshake size={18} />
           </div>
@@ -344,29 +369,31 @@ export default function Header({ onMenuClick }: HeaderProps) {
         </div>
 
         {/* MENU */}
-        <button className="hover:cursor-pointer" onClick={() => setOpen(!open)}>
-          {open ? "✕" : "☰"}
-        </button>
+        <div ref={menuRef} className="relative">
+          <button className="hover:cursor-pointer" onClick={() => setOpen(!open)}>
+            {open ? "✕" : "☰"}
+          </button>
 
-        {open && (
-          <div className="absolute right-0 top-12 bg-white border shadow rounded-xl w-48 py-2 z-50">
-            <button onClick={() => {setOpen(false); router.push(`/profile/${user?._id}`)}} className="px-4 py-2 w-full text-left hover:cursor-pointer">
-              Profile
-            </button>
-            <button onClick={() => {setOpen(false); router.push("/settings")}} className="px-4 py-2 w-full text-left hover:cursor-pointer">
-              Settings
-            </button>
-            <button onClick={() => {setOpen(false); router.push("/friends")}} className="px-4 py-2 w-full text-left hover:cursor-pointer">
-              Friends
-            </button>
-            <button onClick={() => {setOpen(false); router.push("/chatnew")}} className="px-4 py-2 w-full text-left hover:cursor-pointer">
-              Chat
-            </button>
-            <button onClick={logout} className="px-4 py-2 w-full text-left hover:cursor-pointer">
-              Logout
-            </button>
-          </div>
-        )}
+          {open && (
+            <div className="absolute right-0 top-12 bg-white border shadow rounded-xl w-48 py-2 z-50">
+              <button onClick={() => {setOpen(false); router.push(`/profile/${user?._id}`)}} className="px-4 py-2 w-full text-left hover:cursor-pointer">
+                Profile
+              </button>
+              <button onClick={() => {setOpen(false); router.push("/settings")}} className="px-4 py-2 w-full text-left hover:cursor-pointer">
+                Settings
+              </button>
+              <button onClick={() => {setOpen(false); router.push("/friends")}} className="px-4 py-2 w-full text-left hover:cursor-pointer">
+                Friends
+              </button>
+              <button onClick={() => {setOpen(false); router.push("/chatnew")}} className="px-4 py-2 w-full text-left hover:cursor-pointer">
+                Chat
+              </button>
+              <button onClick={logout} className="px-4 py-2 w-full text-left hover:cursor-pointer">
+                Logout
+              </button>
+            </div>
+          )}
+        </div>
 
       </div>
     </div>

@@ -13,7 +13,7 @@ export default function HomeController() {
   useEffect(() => {
     const fetchMe = async () => {
       try {
-        const res = await API.get("/me", {
+        const res = await API.get("/auth/me", {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },

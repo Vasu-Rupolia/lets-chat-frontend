@@ -50,5 +50,5 @@ export default function HomeController() {
   }
 
   // Full seup
-  return <RealMatchingFeed user={user} />;
+  return <RealMatchingFeed />;
 }

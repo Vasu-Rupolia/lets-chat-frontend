@@ -1,211 +1,211 @@
-"use client";
+// "use client";
 
-import { useEffect, useState } from "react";
-import API from "@/lib/api";
-import { useRouter } from "next/navigation";
-import { User } from "@/types";
+// import { useEffect, useState } from "react";
+// import API from "@/lib/api";
+// import { useRouter } from "next/navigation";
+// import { User } from "@/types";
 
-export default function RealMatchingFeed() {
-  const router = useRouter();
-  const [tab, setTab] = useState("learn");
-  const [users, setUsers] = useState<User[]>([]);
-  const [loading, setLoading] = useState(true);
+// export default function RealMatchingFeed() {
+//   const router = useRouter();
+//   const [tab, setTab] = useState("learn");
+//   const [users, setUsers] = useState<User[]>([]);
+//   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-        const token = localStorage.getItem("token");
+//   useEffect(() => {
+//     const fetchUsers = async () => {
+//         const token = localStorage.getItem("token");
 
-        if (!token) {
-            router.push("/login");
-            return;
-        }
+//         if (!token) {
+//             router.push("/login");
+//             return;
+//         }
 
-        try {
-            const res = await API.get("/users/list", {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
+//         try {
+//             const res = await API.get("/users/list", {
+//                 headers: {
+//                     Authorization: `Bearer ${token}`
+//                 }
+//             });
 
-            console.log("Fetched users:", res.data.data);
-            setUsers(res.data.data);
-            setLoading(false);
-        } catch (err) {
-            console.error(err);
-            setLoading(false);
-        }
-    };
+//             console.log("Fetched users:", res.data.data);
+//             setUsers(res.data.data);
+//             setLoading(false);
+//         } catch (err) {
+//             console.error(err);
+//             setLoading(false);
+//         }
+//     };
 
-    fetchUsers();
-  }, []);
+//     fetchUsers();
+//   }, []);
 
-  const sendRequest = (id: string) => {
-    alert(`Friend request sent to user ${id} 🚀`);
-  };
+//   const sendRequest = (id: string) => {
+//     alert(`Friend request sent to user ${id} 🚀`);
+//   };
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-screen text-lg font-semibold">
-        Loading users...
-      </div>
-    );
-  }
+//   if (loading) {
+//     return (
+//       <div className="flex justify-center items-center h-screen text-lg font-semibold">
+//         Loading users...
+//       </div>
+//     );
+//   }
 
-  useEffect(() => {
-    fetchUsers(tab);
-  }, [tab]);
+//   useEffect(() => {
+//     fetchUsers(tab);
+//   }, [tab]);
 
-  const fetchUsers = async (type: string) => {
-    const res = await API.get("/users", {
-      params: { filter: type },
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    });
+//   const fetchUsers = async (type: string) => {
+//     const res = await API.get("/users", {
+//       params: { filter: type },
+//       headers: {
+//         Authorization: `Bearer ${localStorage.getItem("token")}`,
+//       },
+//     });
 
-    setUsers(res.data.data);
-  };
+//     setUsers(res.data.data);
+//   };
 
-  return (
-    <div className="p-6 bg-gray-50 min-h-screen">
+//   return (
+//     <div className="p-6 bg-gray-50 min-h-screen">
 
-      {/* Tabs */}
-      <div className="flex gap-3 mb-6">
-        <button
-          onClick={() => setTab("learn")}
-          className={`px-4 py-2 rounded-full text-sm ${
-            tab === "learn" ? "bg-black text-white" : "bg-white"
-          }`}
-        >
-          🎯 Learn
-        </button>
+//       {/* Tabs */}
+//       <div className="flex gap-3 mb-6">
+//         <button
+//           onClick={() => setTab("learn")}
+//           className={`px-4 py-2 rounded-full text-sm ${
+//             tab === "learn" ? "bg-black text-white" : "bg-white"
+//           }`}
+//         >
+//           🎯 Learn
+//         </button>
 
-        <button
-          onClick={() => setTab("teach")}
-          className={`px-4 py-2 rounded-full text-sm ${
-            tab === "teach" ? "bg-black text-white" : "bg-white"
-          }`}
-        >
-          🧑‍🏫 Teach
-        </button>
+//         <button
+//           onClick={() => setTab("teach")}
+//           className={`px-4 py-2 rounded-full text-sm ${
+//             tab === "teach" ? "bg-black text-white" : "bg-white"
+//           }`}
+//         >
+//           🧑‍🏫 Teach
+//         </button>
 
-        <button
-          onClick={() => setTab("mutual")}
-          className={`px-4 py-2 rounded-full text-sm ${
-            tab === "mutual" ? "bg-black text-white" : "bg-white"
-          }`}
-        >
-          🤝 Mutual
-        </button>
-      </div>
+//         <button
+//           onClick={() => setTab("mutual")}
+//           className={`px-4 py-2 rounded-full text-sm ${
+//             tab === "mutual" ? "bg-black text-white" : "bg-white"
+//           }`}
+//         >
+//           🤝 Mutual
+//         </button>
+//       </div>
 
-      {/* Users Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-        {users.map((u: any) => (
-          <div
-            key={u._id}
-            className="bg-white rounded-2xl shadow-md p-5 hover:shadow-lg transition"
-          >
-            {/* Header */}
-            <div className="flex items-center gap-3 mb-4">
-              <img
-                src={
-                  u.profilePic ||
-                  "https://ui-avatars.com/api/?name=" + u.name
-                }
-                alt={u.name}
-                className="w-12 h-12 rounded-full object-cover"
-              />
+//       {/* Users Grid */}
+//       <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+//         {users.map((u: any) => (
+//           <div
+//             key={u._id}
+//             className="bg-white rounded-2xl shadow-md p-5 hover:shadow-lg transition"
+//           >
+//             {/* Header */}
+//             <div className="flex items-center gap-3 mb-4">
+//               <img
+//                 src={
+//                   u.profilePic ||
+//                   "https://ui-avatars.com/api/?name=" + u.name
+//                 }
+//                 alt={u.name}
+//                 className="w-12 h-12 rounded-full object-cover"
+//               />
 
-              <div>
-                <h2
-                  onClick={() => router.push(`/profile/${u._id}`)}
-                  className="font-semibold cursor-pointer hover:underline"
-                >
-                  {u.name}
-                </h2>
+//               <div>
+//                 <h2
+//                   onClick={() => router.push(`/profile/${u._id}`)}
+//                   className="font-semibold cursor-pointer hover:underline"
+//                 >
+//                   {u.name}
+//                 </h2>
 
-                <p className="text-xs text-gray-500">{u.email}</p>
-              </div>
-            </div>
+//                 <p className="text-xs text-gray-500">{u.email}</p>
+//               </div>
+//             </div>
 
-            {/* Skills they can teach */}
-            <div className="mb-3">
-              <p className="text-xs text-gray-400 mb-1">
-                Can Teach
-              </p>
+//             {/* Skills they can teach */}
+//             <div className="mb-3">
+//               <p className="text-xs text-gray-400 mb-1">
+//                 Can Teach
+//               </p>
 
-              <div className="flex flex-wrap gap-1">
-                {(u.skills || []).slice(0, 4).map((skill: string, i: number) => (
-                  <span
-                    key={i}
-                    className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full"
-                  >
-                    {skill}
-                  </span>
-                ))}
-              </div>
-            </div>
+//               <div className="flex flex-wrap gap-1">
+//                 {(u.skills || []).slice(0, 4).map((skill: string, i: number) => (
+//                   <span
+//                     key={i}
+//                     className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full"
+//                   >
+//                     {skill}
+//                   </span>
+//                 ))}
+//               </div>
+//             </div>
 
-            {/* Skills they want to learn */}
-            <div className="mb-3">
-              <p className="text-xs text-gray-400 mb-1">
-                Wants to Learn
-              </p>
+//             {/* Skills they want to learn */}
+//             <div className="mb-3">
+//               <p className="text-xs text-gray-400 mb-1">
+//                 Wants to Learn
+//               </p>
 
-              <div className="flex flex-wrap gap-1">
-                {(u.skillsToLearn || []).slice(0, 4).map((skill: string, i: number) => (
-                  <span
-                    key={i}
-                    className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full"
-                  >
-                    {skill}
-                  </span>
-                ))}
-              </div>
-            </div>
+//               <div className="flex flex-wrap gap-1">
+//                 {(u.skillsToLearn || []).slice(0, 4).map((skill: string, i: number) => (
+//                   <span
+//                     key={i}
+//                     className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full"
+//                   >
+//                     {skill}
+//                   </span>
+//                 ))}
+//               </div>
+//             </div>
 
-            {/* Action */}
-            {/* <button className="w-full mt-2 bg-black text-white text-sm py-2 rounded-xl hover:opacity-80">
-              Connect
-            </button> */}
-            <button
-                onClick={() => sendRequest(user._id)}
-                disabled={
-                  user.isFriend ||
-                  user.hasSentRequest ||
-                  user.hasReceivedRequest
-                }
-                className={`
-                  w-full
-                  mt-6
-                  py-3
-                  rounded-2xl
-                  font-semibold
-                  transition-all
-                  duration-300
-                  ${
-                    user.isFriend
-                      ? "bg-green-100 text-green-700"
-                      : user.hasSentRequest
-                      ? "bg-yellow-100 text-yellow-700"
-                      : user.hasReceivedRequest
-                      ? "bg-blue-100 text-blue-700"
-                      : "bg-gradient-to-r from-red-500 to-pink-500 text-white hover:scale-105 hover:shadow-lg"
-                  }
-                `}
-              >
-                {user.isFriend
-                  ? "✓ Friends"
-                  : user.hasSentRequest
-                  ? "⏳ Request Sent"
-                  : user.hasReceivedRequest
-                  ? "📨 Respond"
-                  : "+ Connect"}
-              </button>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
+//             {/* Action */}
+//             {/* <button className="w-full mt-2 bg-black text-white text-sm py-2 rounded-xl hover:opacity-80">
+//               Connect
+//             </button> */}
+//             <button
+//                 onClick={() => sendRequest(user._id)}
+//                 disabled={
+//                   user.isFriend ||
+//                   user.hasSentRequest ||
+//                   user.hasReceivedRequest
+//                 }
+//                 className={`
+//                   w-full
+//                   mt-6
+//                   py-3
+//                   rounded-2xl
+//                   font-semibold
+//                   transition-all
+//                   duration-300
+//                   ${
+//                     user.isFriend
+//                       ? "bg-green-100 text-green-700"
+//                       : user.hasSentRequest
+//                       ? "bg-yellow-100 text-yellow-700"
+//                       : user.hasReceivedRequest
+//                       ? "bg-blue-100 text-blue-700"
+//                       : "bg-gradient-to-r from-red-500 to-pink-500 text-white hover:scale-105 hover:shadow-lg"
+//                   }
+//                 `}
+//               >
+//                 {user.isFriend
+//                   ? "✓ Friends"
+//                   : user.hasSentRequest
+//                   ? "⏳ Request Sent"
+//                   : user.hasReceivedRequest
+//                   ? "📨 Respond"
+//                   : "+ Connect"}
+//               </button>
+//           </div>
+//         ))}
+//       </div>
+//     </div>
+//   );
+// }

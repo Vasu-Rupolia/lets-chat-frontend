@@ -3,11 +3,53 @@
 import { useEffect, useState } from "react";
 import API from "@/lib/api";
 import { useRouter } from "next/navigation";
+import { User } from "@/types";
 
 export default function RealMatchingFeed() {
   const router = useRouter();
   const [tab, setTab] = useState("learn");
-  const [users, setUsers] = useState([]);
+  const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+            router.push("/login");
+            return;
+        }
+
+        try {
+            const res = await API.get("/users/list", {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+
+            console.log("Fetched users:", res.data.data);
+            setUsers(res.data.data);
+            setLoading(false);
+        } catch (err) {
+            console.error(err);
+            setLoading(false);
+        }
+    };
+
+    fetchUsers();
+  }, []);
+
+  const sendRequest = (id: string) => {
+    alert(`Friend request sent to user ${id} 🚀`);
+  };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen text-lg font-semibold">
+        Loading users...
+      </div>
+    );
+  }
 
   useEffect(() => {
     fetchUsers(tab);
@@ -124,9 +166,43 @@ export default function RealMatchingFeed() {
             </div>
 
             {/* Action */}
-            <button className="w-full mt-2 bg-black text-white text-sm py-2 rounded-xl hover:opacity-80">
+            {/* <button className="w-full mt-2 bg-black text-white text-sm py-2 rounded-xl hover:opacity-80">
               Connect
-            </button>
+            </button> */}
+            <button
+                onClick={() => sendRequest(user._id)}
+                disabled={
+                  user.isFriend ||
+                  user.hasSentRequest ||
+                  user.hasReceivedRequest
+                }
+                className={`
+                  w-full
+                  mt-6
+                  py-3
+                  rounded-2xl
+                  font-semibold
+                  transition-all
+                  duration-300
+                  ${
+                    user.isFriend
+                      ? "bg-green-100 text-green-700"
+                      : user.hasSentRequest
+                      ? "bg-yellow-100 text-yellow-700"
+                      : user.hasReceivedRequest
+                      ? "bg-blue-100 text-blue-700"
+                      : "bg-gradient-to-r from-red-500 to-pink-500 text-white hover:scale-105 hover:shadow-lg"
+                  }
+                `}
+              >
+                {user.isFriend
+                  ? "✓ Friends"
+                  : user.hasSentRequest
+                  ? "⏳ Request Sent"
+                  : user.hasReceivedRequest
+                  ? "📨 Respond"
+                  : "+ Connect"}
+              </button>
           </div>
         ))}
       </div>

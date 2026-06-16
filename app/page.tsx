@@ -426,355 +426,355 @@
 // // }
 
 
-// "use client";
-
-// import { useEffect, useState, useRef } from "react";
-// import { useRouter } from "next/navigation";
-// import { User } from "@/types";
-// import API from "@/lib/api";
-// import { io } from "socket.io-client";
-
-// export default function HomePage() {
-//   const router = useRouter();
-
-//   const [users, setUsers] = useState<User[]>([]);
-//   const [loading, setLoading] = useState(true);
-//   const [onlineUsers, setOnlineUsers] = useState<string[]>([]);
-//   const [filter, setFilter] = useState("matched");
-
-//   const socketRef = useRef<any>(null);
-
-//   // SOCKET
-//   useEffect(() => {
-//     socketRef.current = io(
-//       process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"
-//     );
-
-//     const socket = socketRef.current;
-//     const user = JSON.parse(localStorage.getItem("user") || "{}");
-
-//     socket.on("connect", () => {
-//       if (user?._id) socket.emit("join", user._id);
-//     });
-
-//     socket.on("user_online", (userId: string) => {
-//       setOnlineUsers((prev) => [...new Set([...prev, userId])]);
-//     });
-
-//     socket.on("user_offline", (userId: string) => {
-//       setOnlineUsers((prev) => prev.filter((id) => id !== userId));
-//     });
-
-//     socket.on("online_users_list", (users: string[]) => {
-//       setOnlineUsers(users);
-//     });
-
-//     return () => socket.disconnect();
-//   }, []);
-
-//   // FETCH USERS
-//   const fetchUsers = async (selectedFilter = "matched") => {
-//     try {
-//       setLoading(true);
-
-//       const token = localStorage.getItem("token");
-
-//       if (!token) {
-//         router.push("/login");
-//         return;
-//       }
-
-//       const res = await API.get("/users", {
-//         params: { filter: selectedFilter },
-//         headers: {
-//           Authorization: `Bearer ${token}`,
-//         },
-//       });
-
-//       setUsers(res.data.data || []);
-//     } catch (err) {
-//       console.error(err);
-//     } finally {
-//       setLoading(false); // 🔥 FIX
-//     }
-//   };
-
-//   // RUN WHEN FILTER CHANGES
-//   useEffect(() => {
-//     fetchUsers(filter);
-//   }, [filter]);
-
-//   // SEND REQUEST
-//   const sendRequest = async (id: string) => {
-//     try {
-//       await API.post(
-//         `/users/friend-request`,
-//         { receiver: id },
-//         {
-//           headers: {
-//             Authorization: `Bearer ${localStorage.getItem("token")}`,
-//           },
-//         }
-//       );
-
-//       setUsers((prev) =>
-//         prev.map((user) =>
-//           user._id === id ? { ...user, hasSentRequest: true } : user
-//         )
-//       );
-//     } catch (error) {
-//       console.error(error);
-//       alert("Failed to send request");
-//     }
-//   };
-
-//   // LOADING
-//   if (loading) {
-//     return (
-//       <div className="flex justify-center items-center h-screen text-lg font-semibold">
-//         Loading users...
-//       </div>
-//     );
-//   }
-
-//   return (
-//   <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-red-50">
-
-//     <main className="max-w-7xl mx-auto px-4 md:px-8 py-8">
-
-//       {/* HERO */}
-//       <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-red-500 via-pink-500 to-orange-400 p-8 md:p-12 text-white mb-10">
-
-//         <div className="absolute -top-16 -left-16 w-64 h-64 bg-white/10 rounded-full"></div>
-//         <div className="absolute -bottom-20 -right-10 w-72 h-72 bg-white/10 rounded-full"></div>
-
-//         <div className="relative z-10">
-//           <h1 className="text-4xl md:text-5xl font-bold">
-//             Discover Talented People
-//           </h1>
-
-//           <p className="mt-3 text-white/90 max-w-2xl text-lg">
-//             Connect with developers, designers, writers and creators who
-//             share your interests and skills.
-//           </p>
-//         </div>
-
-//       </div>
-
-//       {/* FILTERS */}
-//       <div className="flex flex-wrap gap-3 mb-8">
-
-//         <button
-//           onClick={() => setFilter("matched")}
-//           className={`px-5 py-3 rounded-full font-medium transition-all duration-300 ${
-//             filter === "matched"
-//               ? "bg-gradient-to-r from-red-500 to-pink-500 text-white shadow-lg"
-//               : "bg-white border border-gray-200 text-gray-700 hover:border-red-300 hover:shadow"
-//           }`}
-//         >
-//           🎯 Best Matches
-//         </button>
-
-//         <button
-//           onClick={() => setFilter("all")}
-//           className={`px-5 py-3 rounded-full font-medium transition-all duration-300 ${
-//             filter === "all"
-//               ? "bg-gradient-to-r from-red-500 to-pink-500 text-white shadow-lg"
-//               : "bg-white border border-gray-200 text-gray-700 hover:border-red-300 hover:shadow"
-//           }`}
-//         >
-//           👥 All Users
-//         </button>
-
-//       </div>
-
-//       {/* EMPTY STATE */}
-//       {users.length === 0 && (
-//         <div className="bg-white rounded-3xl shadow-lg p-16 text-center">
-
-//           <div className="text-7xl mb-4">
-//             🔍
-//           </div>
-
-//           <h2 className="text-3xl font-bold text-gray-800">
-//             No Users Found
-//           </h2>
-
-//           <p className="text-gray-500 mt-3">
-//             Try adjusting your filters.
-//           </p>
-
-//         </div>
-//       )}
-
-//       {/* USERS GRID */}
-//       <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-
-//         {users.map((user) => (
-//           <div
-//             key={user._id}
-//             className="
-//               bg-white
-//               rounded-3xl
-//               overflow-hidden
-//               shadow-md
-//               hover:shadow-2xl
-//               hover:-translate-y-2
-//               transition-all
-//               duration-500
-//               group
-//             "
-//           >
-
-//             {/* COVER */}
-//             <div className="relative h-28 bg-gradient-to-br from-red-500 via-pink-500 to-orange-400">
-
-//               <div className="absolute inset-0 opacity-20">
-//                 <div className="absolute w-40 h-40 bg-white rounded-full -top-10 -left-10"></div>
-//                 <div className="absolute w-32 h-32 bg-white rounded-full -bottom-10 -right-10"></div>
-//               </div>
-
-//             </div>
-
-//             {/* AVATAR */}
-//             <div className="relative flex justify-center">
-
-//               <div className="-mt-16 relative">
-
-//                 <img
-//                   src={`https://api.skillbarter.codevocab.com/uploads/${user.image}`}
-//                   className="
-//                     w-32
-//                     h-32
-//                     rounded-full
-//                     border-4
-//                     border-white
-//                     object-cover
-//                     shadow-xl
-//                   "
-//                 />
-
-//                 <span
-//                   className={`absolute bottom-3 right-3 w-5 h-5 rounded-full border-2 border-white ${
-//                     onlineUsers.includes(user._id!)
-//                       ? "bg-green-500 animate-pulse"
-//                       : "bg-gray-400"
-//                   }`}
-//                 />
-
-//               </div>
-
-//             </div>
-
-//             {/* CONTENT */}
-//             <div className="px-6 pb-6 text-center">
-
-//               <div className="flex justify-center items-center gap-2 mt-4 flex-wrap">
-
-//                 <h2
-//                   onClick={() => router.push(`/profile/${user._id}`)}
-//                   className="
-//                     text-xl
-//                     font-bold
-//                     text-gray-900
-//                     cursor-pointer
-//                     hover:text-red-500
-//                     transition
-//                   "
-//                 >
-//                   {user.name}
-//                 </h2>
-
-//                 {user.matchPercentage! > 0 && (
-//                   <span
-//                     className="
-//                       bg-green-100
-//                       text-green-700
-//                       px-2 py-1
-//                       rounded-full
-//                       text-xs
-//                       font-semibold
-//                     "
-//                   >
-//                     {user.matchPercentage}% Match
-//                   </span>
-//                 )}
-
-//               </div>
-
-//               <p className="text-gray-500 text-sm mt-2 truncate">
-//                 {user.email}
-//               </p>
-
-//               {/* SKILLS */}
-//               {user.skills?.length ? (
-//                 <div className="flex flex-wrap justify-center gap-2 mt-4">
-
-//                   {user.skills?.slice(0, 3).map((skill, index) => (
-//                     <span
-//                       key={index}
-//                       className="px-3 py-1 rounded-full text-xs bg-gray-100 text-gray-700"
-//                     >
-//                       {skill}
-//                     </span>
-//                   ))}
-
-//                 </div>
-//               ) : null}
-
-//               {/* BUTTON */}
-//               <button
-//                 onClick={() => sendRequest(user._id)}
-//                 disabled={
-//                   user.isFriend ||
-//                   user.hasSentRequest ||
-//                   user.hasReceivedRequest
-//                 }
-//                 className={`
-//                   w-full
-//                   mt-6
-//                   py-3
-//                   rounded-2xl
-//                   font-semibold
-//                   transition-all
-//                   duration-300
-//                   ${
-//                     user.isFriend
-//                       ? "bg-green-100 text-green-700"
-//                       : user.hasSentRequest
-//                       ? "bg-yellow-100 text-yellow-700"
-//                       : user.hasReceivedRequest
-//                       ? "bg-blue-100 text-blue-700"
-//                       : "bg-gradient-to-r from-red-500 to-pink-500 text-white hover:scale-105 hover:shadow-lg"
-//                   }
-//                 `}
-//               >
-//                 {user.isFriend
-//                   ? "✓ Friends"
-//                   : user.hasSentRequest
-//                   ? "⏳ Request Sent"
-//                   : user.hasReceivedRequest
-//                   ? "📨 Respond"
-//                   : "+ Connect"}
-//               </button>
-
-//             </div>
-
-//           </div>
-//         ))}
-
-//       </div>
-
-//     </main>
-
-//   </div>
-// );
-// }
-
 "use client";
 
-import HomeController from "@/components/home/HomeController";
+import { useEffect, useState, useRef } from "react";
+import { useRouter } from "next/navigation";
+import { User } from "@/types";
+import API from "@/lib/api";
+import { io } from "socket.io-client";
 
 export default function HomePage() {
-  return <HomeController />;
+  const router = useRouter();
+
+  const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [onlineUsers, setOnlineUsers] = useState<string[]>([]);
+  const [filter, setFilter] = useState("matched");
+
+  const socketRef = useRef<any>(null);
+
+  // SOCKET
+  useEffect(() => {
+    socketRef.current = io(
+      process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"
+    );
+
+    const socket = socketRef.current;
+    const user = JSON.parse(localStorage.getItem("user") || "{}");
+
+    socket.on("connect", () => {
+      if (user?._id) socket.emit("join", user._id);
+    });
+
+    socket.on("user_online", (userId: string) => {
+      setOnlineUsers((prev) => [...new Set([...prev, userId])]);
+    });
+
+    socket.on("user_offline", (userId: string) => {
+      setOnlineUsers((prev) => prev.filter((id) => id !== userId));
+    });
+
+    socket.on("online_users_list", (users: string[]) => {
+      setOnlineUsers(users);
+    });
+
+    return () => socket.disconnect();
+  }, []);
+
+  // FETCH USERS
+  const fetchUsers = async (selectedFilter = "matched") => {
+    try {
+      setLoading(true);
+
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        router.push("/login");
+        return;
+      }
+
+      const res = await API.get("/users", {
+        params: { filter: selectedFilter },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      setUsers(res.data.data || []);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false); // 🔥 FIX
+    }
+  };
+
+  // RUN WHEN FILTER CHANGES
+  useEffect(() => {
+    fetchUsers(filter);
+  }, [filter]);
+
+  // SEND REQUEST
+  const sendRequest = async (id: string) => {
+    try {
+      await API.post(
+        `/users/friend-request`,
+        { receiver: id },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      setUsers((prev) =>
+        prev.map((user) =>
+          user._id === id ? { ...user, hasSentRequest: true } : user
+        )
+      );
+    } catch (error) {
+      console.error(error);
+      alert("Failed to send request");
+    }
+  };
+
+  // LOADING
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen text-lg font-semibold">
+        Loading users...
+      </div>
+    );
+  }
+
+  return (
+  <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-red-50">
+
+    <main className="max-w-7xl mx-auto px-4 md:px-8 py-8">
+
+      {/* HERO */}
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-red-500 via-pink-500 to-orange-400 p-8 md:p-12 text-white mb-10">
+
+        <div className="absolute -top-16 -left-16 w-64 h-64 bg-white/10 rounded-full"></div>
+        <div className="absolute -bottom-20 -right-10 w-72 h-72 bg-white/10 rounded-full"></div>
+
+        <div className="relative z-10">
+          <h1 className="text-4xl md:text-5xl font-bold">
+            Discover Talented People
+          </h1>
+
+          <p className="mt-3 text-white/90 max-w-2xl text-lg">
+            Connect with developers, designers, writers and creators who
+            share your interests and skills.
+          </p>
+        </div>
+
+      </div>
+
+      {/* FILTERS */}
+      <div className="flex flex-wrap gap-3 mb-8">
+
+        <button
+          onClick={() => setFilter("matched")}
+          className={`px-5 py-3 rounded-full font-medium transition-all duration-300 ${
+            filter === "matched"
+              ? "bg-gradient-to-r from-red-500 to-pink-500 text-white shadow-lg"
+              : "bg-white border border-gray-200 text-gray-700 hover:border-red-300 hover:shadow"
+          }`}
+        >
+          🎯 Best Matches
+        </button>
+
+        <button
+          onClick={() => setFilter("all")}
+          className={`px-5 py-3 rounded-full font-medium transition-all duration-300 ${
+            filter === "all"
+              ? "bg-gradient-to-r from-red-500 to-pink-500 text-white shadow-lg"
+              : "bg-white border border-gray-200 text-gray-700 hover:border-red-300 hover:shadow"
+          }`}
+        >
+          👥 All Users
+        </button>
+
+      </div>
+
+      {/* EMPTY STATE */}
+      {users.length === 0 && (
+        <div className="bg-white rounded-3xl shadow-lg p-16 text-center">
+
+          <div className="text-7xl mb-4">
+            🔍
+          </div>
+
+          <h2 className="text-3xl font-bold text-gray-800">
+            No Users Found
+          </h2>
+
+          <p className="text-gray-500 mt-3">
+            Try adjusting your filters.
+          </p>
+
+        </div>
+      )}
+
+      {/* USERS GRID */}
+      <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+
+        {users.map((user) => (
+          <div
+            key={user._id}
+            className="
+              bg-white
+              rounded-3xl
+              overflow-hidden
+              shadow-md
+              hover:shadow-2xl
+              hover:-translate-y-2
+              transition-all
+              duration-500
+              group
+            "
+          >
+
+            {/* COVER */}
+            <div className="relative h-28 bg-gradient-to-br from-red-500 via-pink-500 to-orange-400">
+
+              <div className="absolute inset-0 opacity-20">
+                <div className="absolute w-40 h-40 bg-white rounded-full -top-10 -left-10"></div>
+                <div className="absolute w-32 h-32 bg-white rounded-full -bottom-10 -right-10"></div>
+              </div>
+
+            </div>
+
+            {/* AVATAR */}
+            <div className="relative flex justify-center">
+
+              <div className="-mt-16 relative">
+
+                <img
+                  src={`https://api.skillbarter.codevocab.com/uploads/${user.image}`}
+                  className="
+                    w-32
+                    h-32
+                    rounded-full
+                    border-4
+                    border-white
+                    object-cover
+                    shadow-xl
+                  "
+                />
+
+                <span
+                  className={`absolute bottom-3 right-3 w-5 h-5 rounded-full border-2 border-white ${
+                    onlineUsers.includes(user._id!)
+                      ? "bg-green-500 animate-pulse"
+                      : "bg-gray-400"
+                  }`}
+                />
+
+              </div>
+
+            </div>
+
+            {/* CONTENT */}
+            <div className="px-6 pb-6 text-center">
+
+              <div className="flex justify-center items-center gap-2 mt-4 flex-wrap">
+
+                <h2
+                  onClick={() => router.push(`/profile/${user._id}`)}
+                  className="
+                    text-xl
+                    font-bold
+                    text-gray-900
+                    cursor-pointer
+                    hover:text-red-500
+                    transition
+                  "
+                >
+                  {user.name}
+                </h2>
+
+                {user.matchPercentage! > 0 && (
+                  <span
+                    className="
+                      bg-green-100
+                      text-green-700
+                      px-2 py-1
+                      rounded-full
+                      text-xs
+                      font-semibold
+                    "
+                  >
+                    {user.matchPercentage}% Match
+                  </span>
+                )}
+
+              </div>
+
+              <p className="text-gray-500 text-sm mt-2 truncate">
+                {user.email}
+              </p>
+
+              {/* SKILLS */}
+              {user.skills?.length ? (
+                <div className="flex flex-wrap justify-center gap-2 mt-4">
+
+                  {user.skills?.slice(0, 3).map((skill, index) => (
+                    <span
+                      key={index}
+                      className="px-3 py-1 rounded-full text-xs bg-gray-100 text-gray-700"
+                    >
+                      {skill}
+                    </span>
+                  ))}
+
+                </div>
+              ) : null}
+
+              {/* BUTTON */}
+              <button
+                onClick={() => sendRequest(user._id)}
+                disabled={
+                  user.isFriend ||
+                  user.hasSentRequest ||
+                  user.hasReceivedRequest
+                }
+                className={`
+                  w-full
+                  mt-6
+                  py-3
+                  rounded-2xl
+                  font-semibold
+                  transition-all
+                  duration-300
+                  ${
+                    user.isFriend
+                      ? "bg-green-100 text-green-700"
+                      : user.hasSentRequest
+                      ? "bg-yellow-100 text-yellow-700"
+                      : user.hasReceivedRequest
+                      ? "bg-blue-100 text-blue-700"
+                      : "bg-gradient-to-r from-red-500 to-pink-500 text-white hover:scale-105 hover:shadow-lg"
+                  }
+                `}
+              >
+                {user.isFriend
+                  ? "✓ Friends"
+                  : user.hasSentRequest
+                  ? "⏳ Request Sent"
+                  : user.hasReceivedRequest
+                  ? "📨 Respond"
+                  : "+ Connect"}
+              </button>
+
+            </div>
+
+          </div>
+        ))}
+
+      </div>
+
+    </main>
+
+  </div>
+);
 }
+
+// "use client";
+
+// import HomeController from "@/components/home/HomeController";
+
+// export default function HomePage() {
+//   return <HomeController />;
+// }
